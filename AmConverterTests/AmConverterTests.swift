@@ -1,11 +1,3 @@
-//
-//  AmConverterTests.swift
-//  AmConverterTests
-//
-//  Created by 俞律 on 10/05/2018.
-//  Copyright © 2018 Lv Yu. All rights reserved.
-//
-
 import XCTest
 @testable import AmConverter
 
@@ -13,24 +5,23 @@ class AmConverterTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testRoundUpDecimals() {
+        let decimal0 = Decimal(string: "-1234")!
+        XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal0).description, "-1234")
+
+        let decimal1 = Decimal(string: "-1234.34")!
+        XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal1).description, "-1234.34")
+
+        let decimal2 = Decimal(string: "-1234.345678")!
+        XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal2).description, "-1234.34568")
+
+        let decimal3 = Decimal(string: "-1234.345543")!
+        XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal3).description, "-1234.34554")
     }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
 }
