@@ -15,7 +15,7 @@
 		C37832CB20A40F7C00838105 /* AmConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37832CA20A40F7C00838105 /* AmConverterTests.swift */; };
 		C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */; };
 		C3B289C020B5861E009A58F4 /* ShortcutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289BF20B5861E009A58F4 /* ShortcutHelper.swift */; };
-		C3B289C220B694ED009A58F4 /* AmTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289C120B694ED009A58F4 /* AmTextView.swift */; };
+		C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289C120B694ED009A58F4 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +41,7 @@
 		C37832CC20A40F7C00838105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversionHelper.swift; sourceTree = "<group>"; };
 		C3B289BF20B5861E009A58F4 /* ShortcutHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutHelper.swift; sourceTree = "<group>"; };
-		C3B289C120B694ED009A58F4 /* AmTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmTextView.swift; sourceTree = "<group>"; };
+		C3B289C120B694ED009A58F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				C37832B520A40F7C00838105 /* AppDelegate.swift */,
-				C3B289C120B694ED009A58F4 /* AmTextView.swift */,
+				C3B289C120B694ED009A58F4 /* Extensions.swift */,
 				C37832B720A40F7C00838105 /* ConverterMainViewController.swift */,
 				C3B289BF20B5861E009A58F4 /* ShortcutHelper.swift */,
 				C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */,
@@ -211,7 +211,7 @@
 				C37832B820A40F7C00838105 /* ConverterMainViewController.swift in Sources */,
 				C37832B620A40F7C00838105 /* AppDelegate.swift in Sources */,
 				C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */,
-				C3B289C220B694ED009A58F4 /* AmTextView.swift in Sources */,
+				C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */,
 				C3B289C020B5861E009A58F4 /* ShortcutHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
