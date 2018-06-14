@@ -28,10 +28,11 @@ class ConverterMainViewController: UIViewController {
     static let rootSubViewDistance: CGFloat = 5
 
     static let keptDigitNumbers = 5
-    static let fontName: String = "KohinoorDevanagari-Medium"
+    static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
     static let containerBackgroundColor: UIColor = UIColor(red: 241.0 / 255, green: 244.0 / 255, blue: 244.0 / 255, alpha: 1)
     static let basicBackgroundColor: UIColor = UIColor(red: 251.0 / 255, green: 251.0 / 255, blue: 251.0 / 255, alpha: 1)
     static let secondBackgroundColor: UIColor = UIColor(red: 235.0 / 255, green: 235.0 / 255, blue: 235.0 / 255, alpha: 1)
+    static let xBarBackgroundColor: UIColor = UIColor(red: 50.0 / 255, green: 86.0 / 255, blue: 137.0 / 255, alpha: 1)
 
     static let shortNameFontColor: UIColor = UIColor(red: 194.0 / 255, green: 202.0 / 255, blue: 209.0 / 255, alpha: 1)
     static let inputFieldActivateFontColor: UIColor = UIColor(red: 119.0 / 255, green: 232.0 / 255, blue: 157.0 / 255, alpha: 1)
@@ -48,13 +49,13 @@ class ConverterMainViewController: UIViewController {
 
     var upperInputTextField: UITextField!
     var upperShortNameLabel: UILabel!
-    var upperLongNameButton: UIButton!
+    var upperLongNameButton: AmShadowButton!
     var upperUnitBiConverter: UnitBiConverter!
     var upperInputTempString: String!
 
     var lowerInputTextField: UITextField!
     var lowerShortNameLabel: UILabel!
-    var lowerLongNameButton: UIButton!
+    var lowerLongNameButton: AmShadowButton!
     var lowerUnitBiConverter: UnitBiConverter!
     var lowerInputTempString: String!
 
@@ -63,12 +64,12 @@ class ConverterMainViewController: UIViewController {
     var predefinedCoversionSets: ShortcutSets!
 
     var inputViewFontSize = 34
+    var longNameButtonHeight = 26
 
     var inputTextFieldDelegate = InputTextFieldDelegate()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         if UIScreen.main.bounds.height <= 568 {
             // is iPhone SE
             self.inputViewFontSize = 24
@@ -88,6 +89,12 @@ class ConverterMainViewController: UIViewController {
 
         self.applyInputNum(previousUpperValue, .upper)
         self.getCalcResult(.upper)
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        get {
+            return UIStatusBarStyle.lightContent
+        }
     }
 
     func applyInputNum(_ num: Decimal, _ inMode: InputMode) {
@@ -139,9 +146,16 @@ class ConverterMainViewController: UIViewController {
         } else if tag == 10 {
             if originStr.contains("-") {
                 let afterRemoval = originStr.index(originStr.startIndex, offsetBy: 1)
-                let newStr = originStr[afterRemoval...]
+                var newStr = originStr[afterRemoval...]
+                if newStr.count == 0 {
+                    newStr = "0"
+                }
+
                 originStr = String(newStr)
             } else {
+                if originStr.count == 0 {
+                    originStr = "0"
+                }
                 originStr = "-" + originStr
             }
         } else if tag == 13 {
@@ -161,11 +175,11 @@ class ConverterMainViewController: UIViewController {
         if inMode == .upper {
             self.upperUnitBiConverter = converter
             self.upperShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.upperUnitBiConverter.unitItem)
-            self.upperLongNameButton.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.upperUnitBiConverter.unitItem) + " ", for: .normal)
+            self.upperLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.upperUnitBiConverter.unitItem) + " ", for: .normal)
         } else {
             self.lowerUnitBiConverter = converter
             self.lowerShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.lowerUnitBiConverter.unitItem)
-            self.lowerLongNameButton.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.lowerUnitBiConverter.unitItem) + " ", for: .normal)
+            self.lowerLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.lowerUnitBiConverter.unitItem) + " ", for: .normal)
         }
     }
 
@@ -230,16 +244,49 @@ class ConverterMainViewController: UIViewController {
     }
 
     func createMainViewSections(_ rootView: UIView, _ fullViewHeight: CGFloat) {
-        let logViewHeight: CGFloat = 0.25
+        let xBarViewHeight: CGFloat = 0.09
+        let logViewHeight: CGFloat = 0.18
         let inOutViewHeight: CGFloat = 0.28
 
         rootView.backgroundColor = ConverterMainViewController.secondBackgroundColor
 
-        let queryLogView = UIView()
-        queryLogView.backgroundColor = ConverterMainViewController.secondBackgroundColor
+        let xBarView = UIView()
+        rootView.addSubview(xBarView)
+        xBarView.backgroundColor = ConverterMainViewController.xBarBackgroundColor
+        xBarView.translatesAutoresizingMaskIntoConstraints = false
+        xBarView.topAnchor.constraint(equalTo: rootView.topAnchor).isActive = true
+        xBarView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
+        xBarView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
+        xBarView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: xBarViewHeight).isActive = true
+        let xBarTitle = UILabel()
+        xBarView.addSubview(xBarTitle)
+        xBarTitle.translatesAutoresizingMaskIntoConstraints = false
+        xBarTitle.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
+        xBarTitle.textAlignment = .center
+        xBarTitle.text = "Yet Another Unit Converter"
+        xBarTitle.textColor = .white
+        xBarTitle.topAnchor.constraint(equalTo: xBarView.topAnchor, constant: 8).isActive = true
+        xBarTitle.leftAnchor.constraint(equalTo: xBarView.leftAnchor).isActive = true
+        xBarTitle.rightAnchor.constraint(equalTo: xBarView.rightAnchor).isActive = true
+
+        // extend xbar to 1/3 behind the input output view
+        let xBarExtendView = UIView()
+        rootView.addSubview(xBarExtendView)
+        xBarExtendView.backgroundColor = ConverterMainViewController.xBarBackgroundColor
+        xBarExtendView.translatesAutoresizingMaskIntoConstraints = false
+        xBarExtendView.topAnchor.constraint(equalTo: xBarView.bottomAnchor).isActive = true
+        xBarExtendView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
+        xBarExtendView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
+        xBarExtendView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: logViewHeight + inOutViewHeight / 3).isActive = true
+        rootView.sendSubview(toBack: xBarExtendView)
+
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout.init()
+        layout.scrollDirection = .horizontal
+        let queryLogView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        queryLogView.backgroundColor = .clear
         rootView.addSubview(queryLogView)
         queryLogView.translatesAutoresizingMaskIntoConstraints = false
-        queryLogView.topAnchor.constraint(equalTo: rootView.topAnchor).isActive = true
+        queryLogView.topAnchor.constraint(equalTo: xBarView.bottomAnchor).isActive = true
         queryLogView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
         queryLogView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
         queryLogView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: logViewHeight).isActive = true
@@ -260,47 +307,59 @@ class ConverterMainViewController: UIViewController {
         shortcutsView.topAnchor.constraint(equalTo: inputOutputView.bottomAnchor).isActive = true
         shortcutsView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
         shortcutsView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
-        shortcutsView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: CGFloat(1) - logViewHeight - inOutViewHeight).isActive = true
+        shortcutsView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight).isActive = true
 
         rootView.bringSubview(toFront: inputOutputView)
 
-        let keyboardHeight = fullViewHeight * (CGFloat(1) - logViewHeight - inOutViewHeight)
+        let keyboardHeight = fullViewHeight * (CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight) - 12 // backoff by 12
         print("Full Height: \(fullViewHeight), Keyboard: \(keyboardHeight)")
         self.createInputOutputSubviews2(inputOutputView.getSubview(5), keyboardHeight)
         self.createShortcutSubviews(shortcutsView)
     }
 
     func createShortcutSubviews(_ shortcutsView: UIView) {
-        let buttonHeightFullRatio: CGFloat = 0.16
+        let buttonHeightFullRatio: CGFloat = 0.13
+        let shortcutsCardView = AmCardView()
+        shortcutsCardView.translatesAutoresizingMaskIntoConstraints = false
+        shortcutsView.addSubview(shortcutsCardView)
+        shortcutsCardView.topAnchor.constraint(equalTo: shortcutsView.topAnchor, constant: 10).isActive = true
+        shortcutsCardView.leftAnchor.constraint(equalTo: shortcutsView.leftAnchor, constant: 5).isActive = true
+        shortcutsCardView.rightAnchor.constraint(equalTo: shortcutsView.rightAnchor, constant: -5).isActive = true
+        shortcutsCardView.bottomAnchor.constraint(equalTo: shortcutsView.bottomAnchor, constant: -10).isActive = true
 
         let shortcuts = ShortcutHelper.getDefinedShortcuts(self.predefinedCoversionSets)
         let rootStackView = UIStackView()
-        shortcutsView.addSubview(rootStackView)
+        let shortcutsCardSubView = shortcutsCardView.getSubview(5)
+        shortcutsCardSubView.addSubview(rootStackView)
+        shortcutsCardSubView.backgroundColor = ConverterMainViewController.basicBackgroundColor
         rootStackView.axis = .horizontal
-        rootStackView.spacing = 2
+        rootStackView.spacing = 4
         rootStackView.distribution = .fillEqually
         rootStackView.alignment = .top
         rootStackView.translatesAutoresizingMaskIntoConstraints = false
-        rootStackView.leftAnchor.constraint(equalTo: shortcutsView.leftAnchor, constant: 4).isActive = true
-        rootStackView.topAnchor.constraint(equalTo: shortcutsView.topAnchor, constant: 20).isActive = true
-        rootStackView.rightAnchor.constraint(equalTo: shortcutsView.rightAnchor, constant: -4).isActive = true
-        rootStackView.bottomAnchor.constraint(equalTo: shortcutsView.bottomAnchor, constant: -3).isActive = true
+        rootStackView.leftAnchor.constraint(equalTo: shortcutsCardSubView.leftAnchor, constant: 5).isActive = true
+        rootStackView.topAnchor.constraint(equalTo: shortcutsCardSubView.topAnchor, constant: 5).isActive = true
+        rootStackView.rightAnchor.constraint(equalTo: shortcutsCardSubView.rightAnchor, constant: -5).isActive = true
+        rootStackView.bottomAnchor.constraint(equalTo: shortcutsCardSubView.bottomAnchor, constant: -5).isActive = true
 
         let stackViews = [UIStackView(), UIStackView(), UIStackView(), UIStackView()]
         for (stackIndex, stackView) in stackViews.enumerated() {
             rootStackView.addArrangedSubview(stackView)
             stackView.axis = .vertical
-            stackView.spacing = 2
+            stackView.spacing = 4
             for (scIndex, shortcut) in shortcuts.enumerated() {
                 if scIndex % stackViews.count == stackIndex {
-                    let scButton = UIButton()
-                    stackView.addArrangedSubview(scButton)
+                    let scButtonView = AmShadowButton()
+
+                    let scButton = scButtonView.getRealButton(1)
                     scButton.setTitle("\(shortcut.displayName)", for: .normal)
                     scButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 15)
-                    scButton.backgroundColor = .black
-                    scButton.heightAnchor.constraint(equalTo: rootStackView.heightAnchor, multiplier: buttonHeightFullRatio).isActive = true
+                    scButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
+                    scButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
                     scButton.tag = scIndex
                     scButton.addTarget(self, action: #selector(shortcutButtonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
+                    stackView.addArrangedSubview(scButtonView)
+                    scButtonView.heightAnchor.constraint(equalTo: rootStackView.heightAnchor, multiplier: buttonHeightFullRatio).isActive = true
                 }
             }
         }
@@ -366,16 +425,16 @@ class ConverterMainViewController: UIViewController {
         leftSplitterView.leftAnchor.constraint(equalTo: leftColorView.rightAnchor, constant: 20).isActive = true
         leftSplitterView.rightAnchor.constraint(equalTo: equalSignView.leftAnchor, constant: -20).isActive = true
         leftSplitterView.topAnchor.constraint(equalTo: leftSplitterHolder.bottomAnchor, constant: 0).isActive = true
-        leftSplitterView.backgroundColor = UIColor(white: 0.1, alpha: 0.2)
+        leftSplitterView.backgroundColor = UIColor(white: 0.1, alpha: 0.1)
 
         // add container items
         self.upperInputTextField = AmTextField()
-        self.upperLongNameButton = AmButton()
+        self.upperLongNameButton = AmShadowButton()
         self.upperShortNameLabel = UILabel()
         self.createInputOutputContainerSubviews(upperContainerView, self.upperInputTextField, self.upperLongNameButton, self.upperShortNameLabel)
 
         self.lowerInputTextField = AmTextField()
-        self.lowerLongNameButton = AmButton()
+        self.lowerLongNameButton = AmShadowButton()
         self.lowerShortNameLabel = UILabel()
         self.createInputOutputContainerSubviews(lowerContainerView, self.lowerInputTextField, self.lowerLongNameButton, self.lowerShortNameLabel)
 
@@ -386,7 +445,7 @@ class ConverterMainViewController: UIViewController {
         self.leftColorBarView = leftColorView
     }
 
-    func createInputOutputContainerSubviews(_ containerView: UIView, _ inputTextField: UITextField, _ longNameButton: UIButton, _ shortNameLabel: UILabel) {
+    func createInputOutputContainerSubviews(_ containerView: UIView, _ inputTextField: UITextField, _ longNameButton: AmShadowButton, _ shortNameLabel: UILabel) {
         containerView.backgroundColor = ConverterMainViewController.basicBackgroundColor
 
         containerView.addSubview(inputTextField)
@@ -396,29 +455,23 @@ class ConverterMainViewController: UIViewController {
         longNameButton.translatesAutoresizingMaskIntoConstraints = false
         shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        let longNameButtonShadow = UIView()
-        longNameButtonShadow.translatesAutoresizingMaskIntoConstraints = false
-        longNameButtonShadow.addSubview(longNameButton)
-        longNameButton.leftAnchor.constraint(equalTo: longNameButtonShadow.leftAnchor).isActive = true
-        longNameButton.rightAnchor.constraint(equalTo: longNameButtonShadow.rightAnchor).isActive = true
-        longNameButton.topAnchor.constraint(equalTo: longNameButtonShadow.topAnchor).isActive = true
-        longNameButton.bottomAnchor.constraint(equalTo: longNameButtonShadow.bottomAnchor).isActive = true
+        let longNameButton = longNameButton.getRealButton(1)
+
         longNameButton.setTitle("", for: .normal)
         longNameButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
         longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 13)
-        longNameButton.backgroundColor = ConverterMainViewController.longNameButtonBackColor
-        longNameButton.layer.cornerRadius = 1
-        longNameButton.clipsToBounds = true
+        longNameButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
 
-        containerView.addSubview(longNameButtonShadow)
-        longNameButtonShadow.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
-        longNameButtonShadow.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5).isActive = true
-        longNameButtonShadow.layer.cornerRadius = 1
-        longNameButtonShadow.layer.shadowColor = ConverterMainViewController.longNameButtonFontColor.cgColor
-        longNameButtonShadow.layer.shadowRadius = 0.7
-        longNameButtonShadow.layer.shadowOffset = CGSize(width: 0.3, height: 0.5)
-        longNameButtonShadow.layer.shadowOpacity = 0.5
-        longNameButtonShadow.clipsToBounds = false
+        containerView.addSubview(longNameButton)
+        longNameButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
+        longNameButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5).isActive = true
+        longNameButton.heightAnchor.constraint(equalToConstant: CGFloat(self.longNameButtonHeight)).isActive = true
+        longNameButton.layer.cornerRadius = 1
+        longNameButton.layer.shadowColor = ConverterMainViewController.longNameButtonFontColor.cgColor
+        longNameButton.layer.shadowRadius = 0.7
+        longNameButton.layer.shadowOffset = CGSize(width: 0.3, height: 0.5)
+        longNameButton.layer.shadowOpacity = 0.5
+        longNameButton.clipsToBounds = false
 
         shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
         shortNameLabel.text = ""
@@ -556,7 +609,7 @@ class ConverterMainViewController: UIViewController {
         ]
 
         for button in ret {
-            button.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 20)
+            button.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 24)
             button.addTarget(self, action: #selector(numpadButtonTouchUpInside), for: UIControlEvents.touchUpInside)
         }
 
@@ -607,6 +660,10 @@ class ConverterMainViewController: UIViewController {
     }
 
     @objc func shortcutButtonTouchUpInside(_ sender: UIButton) {
+        if let shadowButton = sender as? AmButton {
+            shadowButton.setBackgroundColor(color: ConverterMainViewController.keyboardOnTouchColor, forState: .normal)
+        }
+
         let shortcut = ShortcutHelper.getDefinedShortcut(self.predefinedCoversionSets, sender.tag)
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.leftItem), .upper)
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.rightItem), .lower)

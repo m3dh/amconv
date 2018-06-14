@@ -40,6 +40,37 @@ class AmButton: UIButton {
     }
 }
 
+class AmShadowButton: UIView {
+    var button: AmButton?
+
+    func getRealButton(_ radius: CGFloat) -> AmButton {
+        if self.button == nil {
+            let button = AmButton()
+
+            button.translatesAutoresizingMaskIntoConstraints = false
+            self.addSubview(button)
+            button.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+            button.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+            button.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+            button.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+            button.layer.cornerRadius = radius
+            button.clipsToBounds = true
+            button.adjustsImageWhenHighlighted = true
+
+            self.layer.cornerRadius = radius
+            self.layer.shadowColor = ConverterMainViewController.longNameButtonFontColor.cgColor
+            self.layer.shadowRadius = 0.7
+            self.layer.shadowOffset = CGSize(width: 0.3, height: 0.5)
+            self.layer.shadowOpacity = 0.5
+            self.clipsToBounds = false
+
+            self.button = button
+        }
+
+        return self.button!
+    }
+}
+
 class AmCardView: UIView {
     var subview: UIView?
 
@@ -60,7 +91,7 @@ class AmCardView: UIView {
             self.layer.shadowColor = UIColor.gray.cgColor
             self.layer.shadowRadius = 4
             self.layer.shadowOffset = CGSize(width: 0, height: 0)
-            self.layer.shadowOpacity = 0.5
+            self.layer.shadowOpacity = 0.7
             self.clipsToBounds = false
             self.subview = subview
 
