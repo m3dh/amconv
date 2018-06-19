@@ -21,14 +21,35 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
 
     var collectionView: UICollectionView!
 
-    var dataSourceCollection: [QueryLogItem] = [
-        QueryLogItem("0", "-17.77778", UnitItems.fahrenheit, UnitItems.celsius),
-        QueryLogItem("30", "7.84049", UnitItems.usMilesPerGallon, UnitItems.litersPer100Kilometres),
-    ]
+    var dataSourceCollection: [QueryLogItem] = []
 
     func appendLogItem(_ logItem: QueryLogItem) {
-        self.dataSourceCollection.insert(logItem, at: 0)
-        self.collectionView.reloadData()
+        var found = false
+        for sourceItem in self.dataSourceCollection {
+            if sourceItem.from == logItem.from && sourceItem.to == logItem.to && sourceItem.fromUnit == logItem.fromUnit && sourceItem.toUnit == logItem.toUnit {
+                found = true
+            }
+        }
+
+        if !found {
+            let indexPath = IndexPath(item: 0, section: 0)
+            self.dataSourceCollection.insert(logItem, at: 0)
+            self.collectionView.insertItems(at: [indexPath])
+            self.collectionView.scrollToItem(at: indexPath, at: .left, animated: true)
+
+            if self.dataSourceCollection.count > 1 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    // reload second item to remove the hint label
+                    self.collectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
+                }
+
+                if self.dataSourceCollection.count > 10 {
+                    let removeIndex = self.dataSourceCollection.count - 1
+                    self.dataSourceCollection.remove(at: removeIndex)
+                    self.collectionView.deleteItems(at: [IndexPath(item: removeIndex, section: 0)])
+                }
+            }
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

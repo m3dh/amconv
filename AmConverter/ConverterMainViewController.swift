@@ -91,7 +91,7 @@ class ConverterMainViewController: UIViewController {
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(previousLowerUnit), .lower)
 
         self.applyInputNum(previousUpperValue, .upper)
-        self.getCalcResult(.upper)
+        self.getCalcResult(.upper, true)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -222,7 +222,7 @@ class ConverterMainViewController: UIViewController {
         }
     }
 
-    func getCalcResult(_ from: InputMode) {
+    func getCalcResult(_ from: InputMode, _ ignoreHistory: Bool) {
         if from == .upper {
             var upperStr = self.upperInputTempString!
             if upperStr == "" || upperStr == "-" {
@@ -234,7 +234,9 @@ class ConverterMainViewController: UIViewController {
             let stdVal = self.upperUnitBiConverter.toStdValue(upperDecimal)
             let lowerDecimal = self.lowerUnitBiConverter.fromStdValue(stdVal)
             self.applyInputNum(lowerDecimal, .lower)
-            self.queryLogViewDataSource.appendLogItem(QueryLogItem(upperStr, self.lowerInputTempString!, self.upperUnitBiConverter.unitItem, self.lowerUnitBiConverter.unitItem))
+            if !ignoreHistory {
+                self.queryLogViewDataSource.appendLogItem(QueryLogItem(upperStr, self.lowerInputTempString!, self.upperUnitBiConverter.unitItem, self.lowerUnitBiConverter.unitItem))
+            }
         } else {
             var lowerStr = self.lowerInputTempString!
             if lowerStr == "" || lowerStr == "-" {
@@ -244,7 +246,9 @@ class ConverterMainViewController: UIViewController {
             let lowerDecimal = Decimal(string: lowerStr)!
             let upperDecimal = self.upperUnitBiConverter.fromStdValue(self.lowerUnitBiConverter.toStdValue(lowerDecimal))
             self.applyInputNum(upperDecimal, .upper)
-            self.queryLogViewDataSource.appendLogItem(QueryLogItem(lowerStr, self.upperInputTempString!, self.lowerUnitBiConverter.unitItem, self.upperUnitBiConverter.unitItem))
+            if !ignoreHistory {
+                self.queryLogViewDataSource.appendLogItem(QueryLogItem(lowerStr, self.upperInputTempString!, self.lowerUnitBiConverter.unitItem, self.upperUnitBiConverter.unitItem))
+            }
         }
     }
 
@@ -259,7 +263,7 @@ class ConverterMainViewController: UIViewController {
         rootView.addSubview(xBarView)
         xBarView.backgroundColor = ConverterMainViewController.xBarBackgroundColor
         xBarView.translatesAutoresizingMaskIntoConstraints = false
-        xBarView.topAnchor.constraint(equalTo: rootView.topAnchor).isActive = true
+        xBarView.topAnchor.constraint(equalTo: rootView.topAnchor, constant: -1).isActive = true
         xBarView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
         xBarView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
         xBarView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: xBarViewHeight).isActive = true
@@ -287,6 +291,7 @@ class ConverterMainViewController: UIViewController {
 
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout.init()
         layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 0
         let queryLogView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         queryLogView.backgroundColor = .clear
         rootView.addSubview(queryLogView)
@@ -701,7 +706,7 @@ class ConverterMainViewController: UIViewController {
         let shortcut = ShortcutHelper.getDefinedShortcut(self.predefinedCoversionSets, sender.tag)
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.leftItem), .upper)
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.rightItem), .lower)
-        self.getCalcResult(.upper)
+        self.getCalcResult(.upper, true)
     }
 
     @objc func numpadButtonTouchUpInside(_ sender: UIButton) {
@@ -714,7 +719,7 @@ class ConverterMainViewController: UIViewController {
             let responder = self.getFistResponder()
             responder.resignFirstResponder()
         } else if sender.tag == 15 {
-            self.getCalcResult(inputMode)
+            self.getCalcResult(inputMode, false)
         }
     }
 }
