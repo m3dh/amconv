@@ -1,5 +1,11 @@
 import UIKit
 
+class IntroLabelTitles {
+    static let converterIntroLabelText = "- CONVERTER -"
+    static let shortcutsIntroLabelText = "- SHORTCUTS -"
+    static let historyIntroLabelText = "- HISTORY -"
+}
+
 class AmTextView: UITextView {
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(paste(_:)) {

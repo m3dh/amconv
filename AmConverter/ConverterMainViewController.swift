@@ -29,6 +29,8 @@ class ConverterMainViewController: UIViewController {
 
     static let keptDigitNumbers = 5
     static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
+    static let introFontName: String = "AmericanTypewriter"
+
     static let containerBackgroundColor: UIColor = UIColor(red: 241.0 / 255, green: 244.0 / 255, blue: 244.0 / 255, alpha: 1)
     static let basicBackgroundColor: UIColor = UIColor(red: 251.0 / 255, green: 251.0 / 255, blue: 251.0 / 255, alpha: 1)
     static let secondBackgroundColor: UIColor = UIColor(red: 235.0 / 255, green: 235.0 / 255, blue: 235.0 / 255, alpha: 1)
@@ -67,6 +69,7 @@ class ConverterMainViewController: UIViewController {
     var longNameButtonHeight = 26
 
     var inputTextFieldDelegate = InputTextFieldDelegate()
+    var queryLogViewDataSource = QueryLogViewDataSource()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -227,10 +230,11 @@ class ConverterMainViewController: UIViewController {
             }
 
             upperStr = upperStr.trimmingCharacters(in:  CharacterSet.init(charactersIn: "."))
-            let leftDecimal = Decimal(string: upperStr)!
-            let stdVal = self.upperUnitBiConverter.toStdValue(leftDecimal)
-            let rightDecimal = self.lowerUnitBiConverter.fromStdValue(stdVal)
-            self.applyInputNum(rightDecimal, .lower)
+            let upperDecimal = Decimal(string: upperStr)!
+            let stdVal = self.upperUnitBiConverter.toStdValue(upperDecimal)
+            let lowerDecimal = self.lowerUnitBiConverter.fromStdValue(stdVal)
+            self.applyInputNum(lowerDecimal, .lower)
+            self.queryLogViewDataSource.appendLogItem(QueryLogItem(upperStr, self.lowerInputTempString!, self.upperUnitBiConverter.unitItem, self.lowerUnitBiConverter.unitItem))
         } else {
             var lowerStr = self.lowerInputTempString!
             if lowerStr == "" || lowerStr == "-" {
@@ -240,11 +244,12 @@ class ConverterMainViewController: UIViewController {
             let lowerDecimal = Decimal(string: lowerStr)!
             let upperDecimal = self.upperUnitBiConverter.fromStdValue(self.lowerUnitBiConverter.toStdValue(lowerDecimal))
             self.applyInputNum(upperDecimal, .upper)
+            self.queryLogViewDataSource.appendLogItem(QueryLogItem(lowerStr, self.upperInputTempString!, self.lowerUnitBiConverter.unitItem, self.upperUnitBiConverter.unitItem))
         }
     }
 
     func createMainViewSections(_ rootView: UIView, _ fullViewHeight: CGFloat) {
-        let xBarViewHeight: CGFloat = 0.09
+        let xBarViewHeight: CGFloat = 0.06
         let logViewHeight: CGFloat = 0.18
         let inOutViewHeight: CGFloat = 0.28
 
@@ -290,6 +295,10 @@ class ConverterMainViewController: UIViewController {
         queryLogView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
         queryLogView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
         queryLogView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: logViewHeight).isActive = true
+        queryLogView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: QueryLogViewDataSource.CollectionCellId)
+        queryLogView.dataSource = self.queryLogViewDataSource
+        queryLogView.delegate = self.queryLogViewDataSource
+        self.queryLogViewDataSource.collectionView = queryLogView
 
         let inputOutputView = AmCardView()
         inputOutputView.getSubview(5).backgroundColor = ConverterMainViewController.basicBackgroundColor
@@ -312,7 +321,6 @@ class ConverterMainViewController: UIViewController {
         rootView.bringSubview(toFront: inputOutputView)
 
         let keyboardHeight = fullViewHeight * (CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight) - 12 // backoff by 12
-        print("Full Height: \(fullViewHeight), Keyboard: \(keyboardHeight)")
         self.createInputOutputSubviews2(inputOutputView.getSubview(5), keyboardHeight)
         self.createShortcutSubviews(shortcutsView)
     }
@@ -327,9 +335,22 @@ class ConverterMainViewController: UIViewController {
         shortcutsCardView.rightAnchor.constraint(equalTo: shortcutsView.rightAnchor, constant: -5).isActive = true
         shortcutsCardView.bottomAnchor.constraint(equalTo: shortcutsView.bottomAnchor, constant: -10).isActive = true
 
+        let shortcutsCardSubView = shortcutsCardView.getSubview(5)
+        let shortcutsIntroLabel = UILabel()
+        shortcutsIntroLabel.textAlignment = .center
+        shortcutsIntroLabel.text = IntroLabelTitles.shortcutsIntroLabelText
+        shortcutsIntroLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 7)
+        shortcutsIntroLabel.textColor = ConverterMainViewController.inputFieldInactiveFontColor
+        shortcutsCardView.addSubview(shortcutsIntroLabel)
+        shortcutsIntroLabel.translatesAutoresizingMaskIntoConstraints = false
+        shortcutsIntroLabel.leftAnchor.constraint(equalTo: shortcutsCardView.leftAnchor, constant: 0).isActive = true
+        shortcutsIntroLabel.rightAnchor.constraint(equalTo: shortcutsCardView.rightAnchor, constant: 0).isActive = true
+        shortcutsIntroLabel.topAnchor.constraint(equalTo: shortcutsCardView.topAnchor, constant: 0).isActive = true
+        shortcutsIntroLabel.heightAnchor.constraint(equalToConstant: 9).isActive = true
+
         let shortcuts = ShortcutHelper.getDefinedShortcuts(self.predefinedCoversionSets)
         let rootStackView = UIStackView()
-        let shortcutsCardSubView = shortcutsCardView.getSubview(5)
+
         shortcutsCardSubView.addSubview(rootStackView)
         shortcutsCardSubView.backgroundColor = ConverterMainViewController.basicBackgroundColor
         rootStackView.axis = .horizontal
@@ -338,7 +359,7 @@ class ConverterMainViewController: UIViewController {
         rootStackView.alignment = .top
         rootStackView.translatesAutoresizingMaskIntoConstraints = false
         rootStackView.leftAnchor.constraint(equalTo: shortcutsCardSubView.leftAnchor, constant: 5).isActive = true
-        rootStackView.topAnchor.constraint(equalTo: shortcutsCardSubView.topAnchor, constant: 5).isActive = true
+        rootStackView.topAnchor.constraint(equalTo: shortcutsIntroLabel.bottomAnchor, constant: 0).isActive = true
         rootStackView.rightAnchor.constraint(equalTo: shortcutsCardSubView.rightAnchor, constant: -5).isActive = true
         rootStackView.bottomAnchor.constraint(equalTo: shortcutsCardSubView.bottomAnchor, constant: -5).isActive = true
 
@@ -431,12 +452,12 @@ class ConverterMainViewController: UIViewController {
         self.upperInputTextField = AmTextField()
         self.upperLongNameButton = AmShadowButton()
         self.upperShortNameLabel = UILabel()
-        self.createInputOutputContainerSubviews(upperContainerView, self.upperInputTextField, self.upperLongNameButton, self.upperShortNameLabel)
+        self.createInputOutputContainerSubviews(upperContainerView, self.upperInputTextField, self.upperLongNameButton, self.upperShortNameLabel, true)
 
         self.lowerInputTextField = AmTextField()
         self.lowerLongNameButton = AmShadowButton()
         self.lowerShortNameLabel = UILabel()
-        self.createInputOutputContainerSubviews(lowerContainerView, self.lowerInputTextField, self.lowerLongNameButton, self.lowerShortNameLabel)
+        self.createInputOutputContainerSubviews(lowerContainerView, self.lowerInputTextField, self.lowerLongNameButton, self.lowerShortNameLabel, false)
 
         let numpadView = self.createNumpadView(keyboardHeight)
         self.lowerInputTextField.inputView = numpadView
@@ -445,7 +466,7 @@ class ConverterMainViewController: UIViewController {
         self.leftColorBarView = leftColorView
     }
 
-    func createInputOutputContainerSubviews(_ containerView: UIView, _ inputTextField: UITextField, _ longNameButton: AmShadowButton, _ shortNameLabel: UILabel) {
+    func createInputOutputContainerSubviews(_ containerView: UIView, _ inputTextField: UITextField, _ longNameButton: AmShadowButton, _ shortNameLabel: UILabel, _ isUpper: Bool) {
         containerView.backgroundColor = ConverterMainViewController.basicBackgroundColor
 
         containerView.addSubview(inputTextField)
@@ -456,7 +477,6 @@ class ConverterMainViewController: UIViewController {
         shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let longNameButton = longNameButton.getRealButton(1)
-
         longNameButton.setTitle("", for: .normal)
         longNameButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
         longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 13)
@@ -496,6 +516,20 @@ class ConverterMainViewController: UIViewController {
         inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
 
         inputTextField.delegate = self.inputTextFieldDelegate
+
+        if isUpper {
+            let converterIntroLabel = UILabel()
+            converterIntroLabel.textAlignment = .center
+            converterIntroLabel.text = IntroLabelTitles.converterIntroLabelText
+            converterIntroLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 7)
+            converterIntroLabel.textColor = ConverterMainViewController.inputFieldInactiveFontColor
+            containerView.addSubview(converterIntroLabel)
+            converterIntroLabel.translatesAutoresizingMaskIntoConstraints = false
+            converterIntroLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 0).isActive = true
+            converterIntroLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: 0).isActive = true
+            converterIntroLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0).isActive = true
+            converterIntroLabel.heightAnchor.constraint(equalToConstant: 8).isActive = true
+        }
     }
 
     func createNumpadView(_ height: CGFloat) -> UIView {
