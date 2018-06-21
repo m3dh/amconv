@@ -64,14 +64,15 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         cell.contentView.backgroundColor = .clear
         cell.contentView.addSubview(logItemView)
         logItemView.translatesAutoresizingMaskIntoConstraints = false
-        logItemView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 5).isActive = true
+        logItemView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 9).isActive = true
         logItemView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -10).isActive = true
         logItemView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor, constant: 5).isActive = true
         logItemView.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: 0).isActive = true
 
         let logItemContentView = logItemView.getSubview(5)
         logItemContentView.backgroundColor = ConverterMainViewController.basicBackgroundColor
-        logItemView.layer.shadowColor = UIColor.darkGray.cgColor
+        logItemView.layer.shadowColor = UIColor.black.cgColor
+        logItemView.layer.shadowRadius = 6
         self.fillHistoryCardContent(logItemContentView, logItem)
         if indexPath.item == 0 {
             let historyIntroLabel = UILabel()

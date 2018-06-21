@@ -57,6 +57,12 @@ class UnitConversionHelper {
         UnitBiConverter(UnitTypes.temperature, UnitItems.fahrenheit, {d in d * 1.8 + 32}, {d in (d - 32) / 1.8}),
     ]
 
+    private static let universalUnitTypeNames: [UnitTypes:String] = [
+        UnitTypes.fuelConsumption: "fuel consumption",
+        UnitTypes.length: "length",
+        UnitTypes.temperature: "temperature",
+    ]
+
     private static let universalUnitNames: [UnitItems:(String, String)] = [
         UnitItems.usMilesPerGallon: ("US mpg", "miles per U.S. gallon"),
         UnitItems.kilometresPerLiter: ("km/l", "kilometres per liter"),
@@ -71,7 +77,7 @@ class UnitConversionHelper {
     ]
 
     static func getUnitTypeDisplayName(_ unitType: UnitTypes) -> String {
-        return String(describing: unitType)
+        return UnitConversionHelper.universalUnitTypeNames[unitType]!
     }
 
     static func getUnitItemDisplayName(_ unitItem: UnitItems) -> String {
@@ -80,6 +86,17 @@ class UnitConversionHelper {
 
     static func getUnitItemShortName(_ unitItem: UnitItems) -> String {
         return (UnitConversionHelper.universalUnitNames[unitItem]!).0
+    }
+
+    static func getUnitItemsByType(_ unitType: UnitTypes) -> [UnitItems] {
+        var ret: [UnitItems] = []
+        for converter in UnitConversionHelper.converters {
+            if converter.unitType == unitType {
+                ret.append(converter.unitItem)
+            }
+        }
+
+        return ret
     }
 
     static func getUnitConvertersByType(_ unitType: UnitTypes) -> [UnitBiConverter] {

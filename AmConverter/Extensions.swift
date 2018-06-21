@@ -94,9 +94,9 @@ class AmCardView: UIView {
             subview.layer.cornerRadius = radius
             subview.clipsToBounds = true
             self.layer.cornerRadius = radius
-            self.layer.shadowColor = UIColor.gray.cgColor
+            self.layer.shadowColor = UIColor.darkGray.cgColor
             self.layer.shadowRadius = 4
-            self.layer.shadowOffset = CGSize(width: 0, height: 0)
+            self.layer.shadowOffset = CGSize(width: 1, height: 1)
             self.layer.shadowOpacity = 0.7
             self.clipsToBounds = false
             self.subview = subview

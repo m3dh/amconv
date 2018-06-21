@@ -34,7 +34,7 @@
                     </view>
                     <connections>
                         <outlet property="rootView" destination="d7y-Ar-ORP" id="JeN-2j-xIY"/>
-                        <segue destination="kSe-P4-2nQ" kind="presentation" identifier="mainToUnitSelection" id="hP5-xv-hgy"/>
+                        <segue destination="kSe-P4-2nQ" kind="show" identifier="mainToUnitSelection" id="hP5-xv-hgy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

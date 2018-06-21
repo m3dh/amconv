@@ -33,7 +33,7 @@ class ConverterMainViewController: UIViewController {
     static let containerBackgroundColor: UIColor = UIColor(red: 241.0 / 255, green: 244.0 / 255, blue: 244.0 / 255, alpha: 1)
     static let basicBackgroundColor: UIColor = UIColor(red: 251.0 / 255, green: 251.0 / 255, blue: 251.0 / 255, alpha: 1)
     static let secondBackgroundColor: UIColor = UIColor(red: 235.0 / 255, green: 235.0 / 255, blue: 235.0 / 255, alpha: 1)
-    static let xBarBackgroundColor: UIColor = UIColor(red: 50.0 / 255, green: 86.0 / 255, blue: 137.0 / 255, alpha: 1)
+    static let xBarBackgroundColor: UIColor = UIColor(red: 72.0 / 255, green: 71.0 / 255, blue: 85.0 / 255, alpha: 1)
 
     static let shortNameFontColor: UIColor = UIColor(red: 194.0 / 255, green: 202.0 / 255, blue: 209.0 / 255, alpha: 1)
     static let inputFieldActivateFontColor: UIColor = UIColor(red: 119.0 / 255, green: 232.0 / 255, blue: 157.0 / 255, alpha: 1)
@@ -45,6 +45,8 @@ class ConverterMainViewController: UIViewController {
     static let mainStreamFontColor: UIColor = UIColor(red: 31.0 / 255, green: 50.0 / 255, blue: 80.0 / 255, alpha: 1)
 
     static let keyboardOnTouchColor: UIColor = UIColor(red: 246.0 / 255, green: 220.0 / 255, blue: 126.0 / 255, alpha: 1)
+
+    static let secondaryButtonColor = UIColor(red: 219.0 / 255, green: 154.0 / 255, blue: 147.0 / 255, alpha: 1)
 
     @IBOutlet weak var rootView: UIView!
 
@@ -254,8 +256,8 @@ class ConverterMainViewController: UIViewController {
     }
 
     func createMainViewSections(_ rootView: UIView, _ fullViewHeight: CGFloat) {
-        let xBarViewHeight: CGFloat = 0.06
-        let logViewHeight: CGFloat = 0.18
+        let xBarViewHeight: CGFloat = 0.05
+        let logViewHeight: CGFloat = 0.19
         let inOutViewHeight: CGFloat = 0.28
 
         rootView.backgroundColor = ConverterMainViewController.secondBackgroundColor
@@ -710,7 +712,7 @@ class ConverterMainViewController: UIViewController {
             }
 
             self.selectedShortcutButton = shadowButton
-            shadowButton.setBackgroundColor(color: ConverterMainViewController.keyboardOnTouchColor, forState: .normal)
+            shadowButton.setBackgroundColor(color: ConverterMainViewController.secondaryButtonColor, forState: .normal)
         }
 
         let shortcut = ShortcutHelper.getDefinedShortcut(self.predefinedCoversionSets, sender.tag)
@@ -752,6 +754,7 @@ class ConverterMainViewController: UIViewController {
                 self.sideAnimationDelegate!.sideMenuActivatedDirection = .Right
                 dest.transitioningDelegate = self.sideAnimationDelegate!
                 dest.sideSlideDirection = .Right
+                dest.selectionWorkMode = .typeToUnit
             } else {
                 if self.sideAnimationDelegate == nil {
                     self.sideAnimationDelegate = SideAnimationDelegate()
@@ -760,6 +763,7 @@ class ConverterMainViewController: UIViewController {
                 self.sideAnimationDelegate!.sideMenuActivatedDirection = .Left
                 dest.transitioningDelegate = self.sideAnimationDelegate!
                 dest.sideSlideDirection = .Left
+                dest.selectionWorkMode = .unitOnly
             }
         }
     }
