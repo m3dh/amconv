@@ -1,12 +1,9 @@
 import UIKit
 
 /* Project ToDo List:
- *  - Create the customized number pad.
- *  - Create the input boxes, and unit selections (slided windows)
-
- *  - Create number validator (show error on the other side)
+ *  - Create unit selections (slided windows)
+ *  - Create more short cuts below
  *  - Create ICON force touch short cuts.
- *  - Create short cuts below & history banner
  */
 
 class ConverterMainViewController: UIViewController {
@@ -30,6 +27,8 @@ class ConverterMainViewController: UIViewController {
     static let keptDigitNumbers = 5
     static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
     static let introFontName: String = "AmericanTypewriter"
+    static let upperLongNameButtonTag: Int = 1001
+    static let lowerLongNameButtonTag: Int = 1002
 
     static let containerBackgroundColor: UIColor = UIColor(red: 241.0 / 255, green: 244.0 / 255, blue: 244.0 / 255, alpha: 1)
     static let basicBackgroundColor: UIColor = UIColor(red: 251.0 / 255, green: 251.0 / 255, blue: 251.0 / 255, alpha: 1)
@@ -70,6 +69,8 @@ class ConverterMainViewController: UIViewController {
 
     var inputTextFieldDelegate = InputTextFieldDelegate()
     var queryLogViewDataSource = QueryLogViewDataSource()
+    var sideAnimationDelegate: SideAnimationDelegate? = nil
+    var selectedShortcutButton: AmButton? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -469,6 +470,8 @@ class ConverterMainViewController: UIViewController {
         self.upperInputTextField.inputView = numpadView
 
         self.leftColorBarView = leftColorView
+        self.lowerLongNameButton.button!.tag = ConverterMainViewController.lowerLongNameButtonTag
+        self.upperLongNameButton.button!.tag = ConverterMainViewController.upperLongNameButtonTag
     }
 
     func createInputOutputContainerSubviews(_ containerView: UIView, _ inputTextField: UITextField, _ longNameButton: AmShadowButton, _ shortNameLabel: UILabel, _ isUpper: Bool) {
@@ -497,6 +500,8 @@ class ConverterMainViewController: UIViewController {
         longNameButton.layer.shadowOffset = CGSize(width: 0.3, height: 0.5)
         longNameButton.layer.shadowOpacity = 0.5
         longNameButton.clipsToBounds = false
+
+        longNameButton.addTarget(self, action: #selector(longNameButtonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
 
         shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
         shortNameLabel.text = ""
@@ -700,6 +705,11 @@ class ConverterMainViewController: UIViewController {
 
     @objc func shortcutButtonTouchUpInside(_ sender: UIButton) {
         if let shadowButton = sender as? AmButton {
+            if self.selectedShortcutButton != nil {
+                self.selectedShortcutButton!.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
+            }
+
+            self.selectedShortcutButton = shadowButton
             shadowButton.setBackgroundColor(color: ConverterMainViewController.keyboardOnTouchColor, forState: .normal)
         }
 
@@ -707,6 +717,11 @@ class ConverterMainViewController: UIViewController {
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.leftItem), .upper)
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.rightItem), .lower)
         self.getCalcResult(.upper, true)
+    }
+
+    @objc func longNameButtonTouchUpInside(_ sender: UIButton) {
+        // pass the long name button as sender
+        self.performSegue(withIdentifier: "mainToUnitSelection", sender: sender)
     }
 
     @objc func numpadButtonTouchUpInside(_ sender: UIButton) {
@@ -722,5 +737,30 @@ class ConverterMainViewController: UIViewController {
             self.getCalcResult(inputMode, false)
         }
     }
-}
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let dest = segue.destination as? UnitSelectionViewController else {
+            fatalError("Unexpected destination type")
+        }
+
+        if let senderButton = sender as? UIButton {
+            if senderButton.tag == ConverterMainViewController.upperLongNameButtonTag {
+                if self.sideAnimationDelegate == nil {
+                    self.sideAnimationDelegate = SideAnimationDelegate()
+                }
+
+                self.sideAnimationDelegate!.sideMenuActivatedDirection = .Right
+                dest.transitioningDelegate = self.sideAnimationDelegate!
+                dest.sideSlideDirection = .Right
+            } else {
+                if self.sideAnimationDelegate == nil {
+                    self.sideAnimationDelegate = SideAnimationDelegate()
+                }
+
+                self.sideAnimationDelegate!.sideMenuActivatedDirection = .Left
+                dest.transitioningDelegate = self.sideAnimationDelegate!
+                dest.sideSlideDirection = .Left
+            }
+        }
+    }
+}

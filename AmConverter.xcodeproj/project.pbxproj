@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C351246720DB4CF900D4BB9A /* UnitSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C351246620DB4CF900D4BB9A /* UnitSelectionViewController.swift */; };
+		C351246920DB65B600D4BB9A /* SideAnimationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C351246820DB65B600D4BB9A /* SideAnimationHelper.swift */; };
 		C37832B620A40F7C00838105 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37832B520A40F7C00838105 /* AppDelegate.swift */; };
 		C37832B820A40F7C00838105 /* ConverterMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37832B720A40F7C00838105 /* ConverterMainViewController.swift */; };
 		C37832BB20A40F7C00838105 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C37832B920A40F7C00838105 /* Main.storyboard */; };
@@ -30,6 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C351246620DB4CF900D4BB9A /* UnitSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitSelectionViewController.swift; sourceTree = "<group>"; };
+		C351246820DB65B600D4BB9A /* SideAnimationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideAnimationHelper.swift; sourceTree = "<group>"; };
 		C37832B220A40F7C00838105 /* AmConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AmConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C37832B520A40F7C00838105 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C37832B720A40F7C00838105 /* ConverterMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterMainViewController.swift; sourceTree = "<group>"; };
@@ -88,8 +92,10 @@
 				C37832B520A40F7C00838105 /* AppDelegate.swift */,
 				C3B289C120B694ED009A58F4 /* Extensions.swift */,
 				C37832B720A40F7C00838105 /* ConverterMainViewController.swift */,
+				C351246620DB4CF900D4BB9A /* UnitSelectionViewController.swift */,
 				C39FE44B20D285F800071A51 /* QueryLogViewDataSource.swift */,
 				C3B289BF20B5861E009A58F4 /* ShortcutHelper.swift */,
+				C351246820DB65B600D4BB9A /* SideAnimationHelper.swift */,
 				C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */,
 				C37832B920A40F7C00838105 /* Main.storyboard */,
 				C37832BC20A40F7C00838105 /* Assets.xcassets */,
@@ -211,8 +217,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C351246920DB65B600D4BB9A /* SideAnimationHelper.swift in Sources */,
 				C37832B820A40F7C00838105 /* ConverterMainViewController.swift in Sources */,
 				C39FE44C20D285F800071A51 /* QueryLogViewDataSource.swift in Sources */,
+				C351246720DB4CF900D4BB9A /* UnitSelectionViewController.swift in Sources */,
 				C37832B620A40F7C00838105 /* AppDelegate.swift in Sources */,
 				C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */,
 				C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */,
