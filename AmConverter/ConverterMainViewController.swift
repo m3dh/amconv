@@ -24,7 +24,7 @@ class ConverterMainViewController: UIViewController {
 
     static let rootSubViewDistance: CGFloat = 5
 
-    static let keptDigitNumbers = 5
+    static let keptDigitNumbers = 8
     static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
     static let introFontName: String = "AmericanTypewriter"
     static let upperLongNameButtonTag: Int = 1001
@@ -67,7 +67,7 @@ class ConverterMainViewController: UIViewController {
     var predefinedCoversionSets: ShortcutSets!
 
     var inputViewFontSize = 34
-    var longNameButtonHeight = 26
+    var longNameButtonHeight = 31
 
     var inputTextFieldDelegate = InputTextFieldDelegate()
     var queryLogViewDataSource = QueryLogViewDataSource()
@@ -78,8 +78,10 @@ class ConverterMainViewController: UIViewController {
         super.viewDidLoad()
         if UIScreen.main.bounds.height <= 568 {
             // is iPhone SE
-            self.inputViewFontSize = 24
+            self.inputViewFontSize = 28
         }
+
+        UnitConversionHelper.initialize()
 
         // TODO: this shall be loaded from storage
         self.predefinedCoversionSets = ShortcutSets.usToInternational
@@ -133,6 +135,8 @@ class ConverterMainViewController: UIViewController {
         if inMode == .lower {
             originStr = self.lowerInputTempString!
         }
+
+        print("Previous String : \(originStr)")
 
         // Digits
         if tag >= 0 && tag <= 9 {
@@ -382,7 +386,7 @@ class ConverterMainViewController: UIViewController {
 
                     let scButton = scButtonView.getRealButton(1)
                     scButton.setTitle("\(shortcut.displayName)", for: .normal)
-                    scButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 15)
+                    scButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 17)
                     scButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
                     scButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
                     scButton.tag = scIndex
@@ -396,7 +400,7 @@ class ConverterMainViewController: UIViewController {
 
     func createInputOutputSubviews2(_ inputOutputView: UIView, _ keyboardHeight: CGFloat) {
         // mode: up & bottom mode
-        let equalSignHeightRatio: CGFloat = 0.10
+        let equalSignHeightRatio: CGFloat = 0.08
         let equalSignRightDistance: CGFloat = 55
 
         let upperContainerView = UIView()
@@ -489,7 +493,7 @@ class ConverterMainViewController: UIViewController {
         let longNameButton = longNameButton.getRealButton(1)
         longNameButton.setTitle("", for: .normal)
         longNameButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
-        longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 13)
+        longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 16)
         longNameButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
 
         containerView.addSubview(longNameButton)
@@ -705,6 +709,12 @@ class ConverterMainViewController: UIViewController {
         }
     }
 
+    func resetShortcutButtonColor() {
+        if self.selectedShortcutButton != nil {
+            self.selectedShortcutButton!.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
+        }
+    }
+
     @objc func shortcutButtonTouchUpInside(_ sender: UIButton) {
         if let shadowButton = sender as? AmButton {
             if self.selectedShortcutButton != nil {
@@ -745,6 +755,7 @@ class ConverterMainViewController: UIViewController {
             fatalError("Unexpected destination type")
         }
 
+        dest.converterController = self
         if let senderButton = sender as? UIButton {
             if senderButton.tag == ConverterMainViewController.upperLongNameButtonTag {
                 if self.sideAnimationDelegate == nil {
@@ -760,9 +771,9 @@ class ConverterMainViewController: UIViewController {
                     self.sideAnimationDelegate = SideAnimationDelegate()
                 }
 
-                self.sideAnimationDelegate!.sideMenuActivatedDirection = .Left
+                self.sideAnimationDelegate!.sideMenuActivatedDirection = .Right
                 dest.transitioningDelegate = self.sideAnimationDelegate!
-                dest.sideSlideDirection = .Left
+                dest.sideSlideDirection = .Right
                 dest.selectionWorkMode = .unitOnly
             }
         }

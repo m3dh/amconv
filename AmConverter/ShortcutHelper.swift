@@ -25,7 +25,7 @@ class ShortcutItem {
 class ShortcutHelper {
     private static let definedShortcuts: [ShortcutItem] = [
         // U.S. units to international
-        ShortcutItem(ShortcutSets.usToInternational, "mpg", UnitItems.usMilesPerGallon, UnitItems.litersPer100Kilometres),
+        ShortcutItem(ShortcutSets.usToInternational, "mpg", UnitItems.usMilesPerGallon, UnitItems.litersPer100Kilometers),
         ShortcutItem(ShortcutSets.usToInternational, "°F", UnitItems.fahrenheit, UnitItems.celsius)
     ]
 
