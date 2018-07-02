@@ -108,7 +108,7 @@ class ConverterMainViewController: UIViewController {
     func applyInputNum(_ num: Decimal, _ inMode: InputMode) {
         var realNum = num
         if num.isNormal {
-            realNum = ConverterMainViewController.getRoundedNumber(num)
+            realNum = ConverterMainViewController.getRoundedNumber(num, ConverterMainViewController.keptDigitNumbers)
         }
 
         if inMode == .upper {
@@ -193,11 +193,11 @@ class ConverterMainViewController: UIViewController {
         }
     }
 
-    static func getRoundedNumber(_ num: Decimal) -> Decimal {
+    static func getRoundedNumber(_ num: Decimal, _ keep: Int) -> Decimal {
         let stringNumber = num.description
         if stringNumber.contains(".") {
             let dotIndex = stringNumber.distance(from: stringNumber.startIndex, to: stringNumber.index(of: ".")!)
-            let roundIndex = dotIndex + ConverterMainViewController.keptDigitNumbers + 1
+            let roundIndex = dotIndex + keep + 1
             if roundIndex < stringNumber.count {
                 let ptr = UnsafeMutablePointer<Decimal>.allocate(capacity: 1)
                 ptr[0] = num

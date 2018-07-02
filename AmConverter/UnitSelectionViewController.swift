@@ -212,11 +212,13 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         } else {
             let selected = self.selectionSource[indexPath.section].unitItems[indexPath.row - 1]
             if self.selectionWorkMode == .typeToUnit {
-                // find the first different target unit
-                let firstTarget = self.selectionSource[indexPath.section].unitItems.first(where: {$0 != selected})!
-
                 self.converterController.applyConverter(UnitConversionHelper.getUnitConverterByItem(selected), .upper)
-                self.converterController.applyConverter(UnitConversionHelper.getUnitConverterByItem(firstTarget), .lower)
+
+                if self.converterController.lowerUnitBiConverter.unitType != self.selectionSource[indexPath.section].unitType {
+                    // find the first different target unit
+                    let firstTarget = self.selectionSource[indexPath.section].unitItems.first(where: {$0 != selected})!
+                    self.converterController.applyConverter(UnitConversionHelper.getUnitConverterByItem(firstTarget), .lower)
+                }
                 self.converterController.getCalcResult(.upper, true)
             } else {
                 self.converterController.applyConverter(UnitConversionHelper.getUnitConverterByItem(selected), .lower)

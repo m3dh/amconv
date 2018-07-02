@@ -6,12 +6,19 @@ enum UnitTypes {
     case length
     case temperature
     case velocity
-    
     case volume
-    case weight
+    case mass
 }
 
 enum UnitItems {
+    /* Mass, Std: kilogram */
+    case gram
+    case tonne
+    case usTon
+    case kilogram
+    case pound // lb: 0.4535924 kg
+    case ounceMass // oz: 0.02834949254 kg
+
     /* Area, Std: square centimeters */
     case squareMeter
     case squareCentimeter
@@ -47,6 +54,18 @@ enum UnitItems {
     case mph
     case knot
     case meterPerSecond
+
+    /* Volume, Std: gal */
+    case cubicCentimeter
+    case cubitFoot
+    case cubitInch
+    case pint
+    case fluidOunce
+    case quart
+    case gallon
+    case impGallon
+    case liter
+    case milliliter
 }
 
 class UnitBiConverter {
@@ -106,6 +125,26 @@ class UnitConversionHelper {
         UnitBiConverter(UnitTypes.velocity, UnitItems.mph, {d in d * 2.23693629}, {d in d / 2.23693629}),
         UnitBiConverter(UnitTypes.velocity, UnitItems.kph, {d in d * 3.6}, {d in d / 3.6}),
         UnitBiConverter(UnitTypes.velocity, UnitItems.knot, {d in d * 1.94384449}, {d in d / 1.94384449}),
+
+        /* volume */
+        UnitBiConverter(UnitTypes.volume, UnitItems.cubicCentimeter, {d in d / 0.0002641721}, {d in d * 0.0002641721}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.cubitFoot, {d in d / 7.480519}, {d in d * 7.480519}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.cubitInch, {d in d / 0.004329004}, {d in d * 0.004329004}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.pint, {d in d / 0.125}, {d in d * 0.125}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.fluidOunce, {d in d / 0.0078125}, {d in d * 0.0078125}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.quart, {d in d / 0.25}, {d in d * 0.25}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.gallon, {d in d}, {d in d}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.impGallon, {d in d / 1.200950}, {d in d * 1.200950}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.liter, {d in d / 0.2641721}, {d in d * 0.2641721}),
+        UnitBiConverter(UnitTypes.volume, UnitItems.milliliter, {d in d / 0.0002641721}, {d in d * 0.0002641721}),
+
+        /* mass */
+        UnitBiConverter(UnitTypes.mass, UnitItems.gram, {d in d * 1000}, {d in d / 1000}),
+        UnitBiConverter(UnitTypes.mass, UnitItems.tonne, {d in d / 1000}, {d in d * 1000}),
+        UnitBiConverter(UnitTypes.mass, UnitItems.usTon, {d in d / 907.18474}, {d in d * 907.18474}),
+        UnitBiConverter(UnitTypes.mass, UnitItems.kilogram, {d in d}, {d in d}),
+        UnitBiConverter(UnitTypes.mass, UnitItems.pound, {d in d / 0.45359237}, {d in d * 0.45359237}),
+        UnitBiConverter(UnitTypes.mass, UnitItems.ounceMass, {d in d / 0.028349523125}, {d in d * 0.028349523125}),
     ]
 
     private static let universalUnitTypeNames: [UnitTypes:String] = [
@@ -114,9 +153,18 @@ class UnitConversionHelper {
         UnitTypes.length: "length",
         UnitTypes.temperature: "temperature",
         UnitTypes.velocity: "velocity",
+        UnitTypes.volume: "volume",
+        UnitTypes.mass: "mass",
     ]
 
     private static let universalUnitNames: [UnitItems:(String, String)] = [
+        UnitItems.gram: ("g", "gram"),
+        UnitItems.tonne: ("t", "tonne"),
+        UnitItems.usTon: ("ton", "ton (U.S. ton)"),
+        UnitItems.kilogram: ("kg", "kilogram"),
+        UnitItems.pound: ("lb", "pound"),
+        UnitItems.ounceMass: ("oz", "ounce"),
+
         UnitItems.squareMeter: ("m²", "square meter"),
         UnitItems.squareCentimeter: ("cm²", "square centimeter"),
         UnitItems.squareFoot: ("ft²", "square foot"),
@@ -147,6 +195,17 @@ class UnitConversionHelper {
         UnitItems.kph: ("kph", "kilometers per hour"),
         UnitItems.knot: ("kn", "knot"),
         UnitItems.meterPerSecond: ("m/s", "meters per second"),
+
+        UnitItems.cubicCentimeter: ("cm³", "cubic centimeter (cc)"),
+        UnitItems.cubitFoot: ("ft³", "cubic foot"),
+        UnitItems.cubitInch: ("in³", "cubic inch"),
+        UnitItems.pint: ("pt", "pint"),
+        UnitItems.fluidOunce: ("fl oz", "fluid ounce"),
+        UnitItems.quart: ("qt", "quart"),
+        UnitItems.gallon: ("gal", "gallon (U.S.)"),
+        UnitItems.impGallon: ("imp. gal", "imperial gallon"),
+        UnitItems.liter: ("l", "liter"),
+        UnitItems.milliliter: ("ml", "milli-liter"),
     ]
 
     static func initialize() {
