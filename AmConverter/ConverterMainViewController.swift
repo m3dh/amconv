@@ -1,11 +1,5 @@
 import UIKit
 
-/* Project ToDo List:
- *  - Create unit selections (slided windows)
- *  - Create more short cuts below
- *  - Create ICON force touch short cuts.
- */
-
 class ConverterMainViewController: UIViewController {
     class InputTextFieldDelegate: NSObject, UITextFieldDelegate {
         func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -194,21 +188,97 @@ class ConverterMainViewController: UIViewController {
     }
 
     static func getRoundedNumber(_ num: Decimal, _ keep: Int) -> Decimal {
+        // keep at least 2 number after the digit point and at most <keep> significant numbers.
         let stringNumber = num.description
         if stringNumber.contains(".") {
-            let dotIndex = stringNumber.distance(from: stringNumber.startIndex, to: stringNumber.index(of: ".")!)
-            let roundIndex = dotIndex + keep + 1
-            if roundIndex < stringNumber.count {
-                let ptr = UnsafeMutablePointer<Decimal>.allocate(capacity: 1)
-                ptr[0] = num
-                let uPtr = UnsafePointer<Decimal>.init(ptr)
-                NSDecimalRound(ptr, uPtr, ConverterMainViewController.keptDigitNumbers, NSDecimalNumber.RoundingMode.bankers)
-                let result = (ptr.pointee as NSDecimalNumber)
-                return result.decimalValue
+            var result = ""
+            var afterDot = false
+            var foundNum = false
+            var remainingSig = 0
+            for (i, ch) in stringNumber.enumerated() {
+                if afterDot {
+                    var upRound = false
+                    if remainingSig + i < stringNumber.count {
+                        let adNum = stringNumber[stringNumber.index(stringNumber.startIndex, offsetBy: remainingSig + i)]
+                        if adNum == "5" || adNum == "6" || adNum == "7" || adNum == "8" || adNum == "9" {
+                            upRound = true
+                        }
+                    }
+
+                    var kept = [Character]()
+                    var index = remainingSig - 1 + i
+                    if stringNumber.count - 1 < index {
+                        index = stringNumber.count - 1
+                    }
+
+                    while index >= i {
+                        var char = stringNumber[stringNumber.index(stringNumber.startIndex, offsetBy: index)]
+                        if upRound {
+                            upRound = false
+                            if char == "0" {
+                                char = "1"
+                            } else if char == "1" {
+                                char = "2"
+                            } else if char == "2" {
+                                char = "3"
+                            } else if char == "3" {
+                                char = "4"
+                            } else if char == "4" {
+                                char = "5"
+                            } else if char == "5" {
+                                char = "6"
+                            } else if char == "6" {
+                                char = "7"
+                            } else if char == "7" {
+                                char = "8"
+                            } else if char == "8" {
+                                char = "9"
+                            } else if char == "9" {
+                                char = "0"
+                                upRound = true
+                            }
+                        }
+
+                        if !foundNum {
+                            if char != "0" {
+                                foundNum = true
+                            }
+                        }
+
+                        if foundNum {
+                            kept.append(char)
+                        }
+
+                        index -= 1
+                    }
+
+                    if kept.count > 0 {
+                        result += "."
+                        for ch in kept.reversed() {
+                            result.append(ch)
+                        }
+                    }
+                } else {
+                    if ch == "." {
+                        afterDot = true
+                        remainingSig = keep - result.count
+                        if stringNumber.contains("-") {
+                            remainingSig += 1
+                        }
+
+                        if remainingSig < 2 {
+                            remainingSig = 2
+                        }
+                    } else {
+                        result.append(ch)
+                    }
+                }
             }
 
+            return Decimal(string: result)!
+        } else {
+            return num
         }
-        return num
     }
 
     func getInputMode() -> InputMode {

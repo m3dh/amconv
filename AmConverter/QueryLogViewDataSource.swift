@@ -160,7 +160,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         lowerShortNameLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 10)
 
         let upperDigitLabel = UILabel()
-        upperDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.from)!, 6).description
+        upperDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.from)!, 5).description
         upperDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
         upperDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         upperDigitLabel.textAlignment = .center
@@ -181,7 +181,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         upperShortNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
 
         let lowerDigitLabel = UILabel()
-        lowerDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.to)!, 6).description
+        lowerDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.to)!, 5).description
         lowerDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
         lowerDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         lowerDigitLabel.textAlignment = .center
