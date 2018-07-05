@@ -734,7 +734,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         self.applyConverter(UnitConversionHelper.getUnitConverterByItem(logItem.toUnit), .lower)
         self.applyInputNum(Decimal(string: logItem.from)!, .upper)
         self.applyInputNum(Decimal(string: logItem.to)!, .lower)
-
         self.setInputMode(.upper)
     }
 
@@ -752,8 +751,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
                 self.sideAnimationDelegate!.sideMenuActivatedDirection = .Right
                 dest.transitioningDelegate = self.sideAnimationDelegate!
-                dest.sideSlideDirection = .Right
-                dest.selectionWorkMode = .typeToUnit
             } else {
                 if self.sideAnimationDelegate == nil {
                     self.sideAnimationDelegate = SideAnimationDelegate()
@@ -761,8 +758,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
                 self.sideAnimationDelegate!.sideMenuActivatedDirection = .Right
                 dest.transitioningDelegate = self.sideAnimationDelegate!
-                dest.sideSlideDirection = .Right
-                dest.selectionWorkMode = .unitOnly
             }
         }
     }

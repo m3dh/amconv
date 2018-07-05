@@ -149,7 +149,7 @@ class UnitConversionHelper {
 
     private static let universalUnitTypeNames: [UnitTypes:String] = [
         UnitTypes.area: "area",
-        UnitTypes.fuelConsumption: "fuel consumption",
+        UnitTypes.fuelConsumption: "gas mileage",
         UnitTypes.length: "length",
         UnitTypes.temperature: "temperature",
         UnitTypes.velocity: "velocity",

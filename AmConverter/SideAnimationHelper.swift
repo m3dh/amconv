@@ -59,7 +59,7 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }
 
     func transitionDuration(using: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.3
+        return 0.2
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -99,7 +99,6 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 }
 
 struct SideMenuHelper {
-    static let menuWidthPercent: CGFloat = 0.7
-    static let percentThreshold: CGFloat = 0.3
+    static let menuWidthPercent: CGFloat = 0.8
     static let snapshotTagNumber: Int = 10001
 }
