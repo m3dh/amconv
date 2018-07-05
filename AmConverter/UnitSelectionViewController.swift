@@ -227,7 +227,6 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
             // for a strange reason (gc?) if we don't have this line the flow will stuck here...
             tableView.reloadSections(IndexSet(integer: indexPath.section), with: UITableViewRowAnimation.none)
-            self.converterController.resetShortcutButtonColor()
             self.dismiss(animated: true, completion: nil)
         }
     }

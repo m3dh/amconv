@@ -1,16 +1,7 @@
 import UIKit
 
-class ConverterMainViewController: UIViewController {
-    class InputTextFieldDelegate: NSObject, UITextFieldDelegate {
-        func textFieldDidBeginEditing(_ textField: UITextField) {
-            textField.textColor = ConverterMainViewController.inputFieldActivateFontColor
-        }
-
-        func textFieldDidEndEditing(_ textField: UITextField) {
-            textField.textColor = ConverterMainViewController.inputFieldInactiveFontColor
-        }
-    }
-
+// UITextFieldDelegate for input output view text fields.
+class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     enum InputMode {
         case upper
         case lower
@@ -58,15 +49,13 @@ class ConverterMainViewController: UIViewController {
 
     var leftColorBarView: UIView!
 
-    var predefinedCoversionSets: ShortcutSets!
-
     var inputViewFontSize = 34
     var longNameButtonHeight = 31
 
-    var inputTextFieldDelegate = InputTextFieldDelegate()
     var queryLogViewDataSource = QueryLogViewDataSource()
     var sideAnimationDelegate: SideAnimationDelegate? = nil
-    var selectedShortcutButton: AmButton? = nil
+
+    var previousInputMode: InputMode = .upper
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,7 +67,6 @@ class ConverterMainViewController: UIViewController {
         UnitConversionHelper.initialize()
 
         // TODO: this shall be loaded from storage
-        self.predefinedCoversionSets = ShortcutSets.usToInternational
         let previousUpperUnit = UnitItems.fahrenheit
         let previousLowerUnit = UnitItems.celsius
         let previousUpperValue = Decimal(0)
@@ -93,9 +81,23 @@ class ConverterMainViewController: UIViewController {
         self.getCalcResult(.upper, true)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.setInputMode(self.previousInputMode)
+    }
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         get {
             return UIStatusBarStyle.lightContent
+        }
+    }
+
+    func setInputMode(_ mode: InputMode) {
+        self.previousInputMode = mode
+        if mode == .upper {
+            self.upperInputTextField.becomeFirstResponder()
+        } else {
+            self.lowerInputTextField.becomeFirstResponder()
         }
     }
 
@@ -130,8 +132,6 @@ class ConverterMainViewController: UIViewController {
             originStr = self.lowerInputTempString!
         }
 
-        print("Previous String : \(originStr)")
-
         // Digits
         if tag >= 0 && tag <= 9 {
             if originStr == "0" || originStr == "" {
@@ -162,11 +162,17 @@ class ConverterMainViewController: UIViewController {
                 }
                 originStr = "-" + originStr
             }
+        } else if tag == 12 {
+            if originStr.count == 1 || (originStr.count == 2 && originStr[originStr.startIndex] == "-") {
+                originStr = "0"
+            } else if originStr.count > 1 {
+                originStr = String(originStr[..<originStr.index(originStr.endIndex, offsetBy: -1)])
+            }
         } else if tag == 13 {
             originStr = "0"
         }
 
-        let field = self.getFistResponder()
+        let field = self.getFirstResponder()
         field.text = originStr
         if inMode == .lower {
             self.lowerInputTempString = originStr
@@ -291,7 +297,7 @@ class ConverterMainViewController: UIViewController {
         }
     }
 
-    func getFistResponder() -> UITextField {
+    func getFirstResponder() -> UITextField {
         if self.getInputMode() == .upper {
             return self.upperInputTextField
         } else {
@@ -377,9 +383,10 @@ class ConverterMainViewController: UIViewController {
         queryLogView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
         queryLogView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
         queryLogView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: logViewHeight).isActive = true
-        queryLogView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: QueryLogViewDataSource.CollectionCellId)
+        queryLogView.register(QueryLogViewCell.self, forCellWithReuseIdentifier: QueryLogViewDataSource.collectionCellId)
         queryLogView.dataSource = self.queryLogViewDataSource
         queryLogView.delegate = self.queryLogViewDataSource
+        queryLogViewDataSource.converterController = self
         self.queryLogViewDataSource.collectionView = queryLogView
 
         let inputOutputView = AmCardView()
@@ -391,84 +398,41 @@ class ConverterMainViewController: UIViewController {
         inputOutputView.rightAnchor.constraint(equalTo: rootView.rightAnchor, constant: -5).isActive = true
         inputOutputView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: inOutViewHeight).isActive = true
 
-        let shortcutsView = UIView()
-        shortcutsView.backgroundColor = ConverterMainViewController.secondBackgroundColor
-        rootView.addSubview(shortcutsView)
-        shortcutsView.translatesAutoresizingMaskIntoConstraints = false
-        shortcutsView.topAnchor.constraint(equalTo: inputOutputView.bottomAnchor).isActive = true
-        shortcutsView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
-        shortcutsView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
-        shortcutsView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight).isActive = true
+        let keyboardView = UIView()
+        keyboardView.backgroundColor = ConverterMainViewController.secondBackgroundColor
+        rootView.addSubview(keyboardView)
+        keyboardView.translatesAutoresizingMaskIntoConstraints = false
+        keyboardView.topAnchor.constraint(equalTo: inputOutputView.bottomAnchor).isActive = true
+        keyboardView.leftAnchor.constraint(equalTo: rootView.leftAnchor).isActive = true
+        keyboardView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
+        keyboardView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight).isActive = true
+        self.createKeyboardSubviews(keyboardView)
 
         rootView.bringSubview(toFront: inputOutputView)
-
-        let keyboardHeight = fullViewHeight * (CGFloat(1) - logViewHeight - inOutViewHeight - xBarViewHeight) - 12 // backoff by 12
-        self.createInputOutputSubviews2(inputOutputView.getSubview(5), keyboardHeight)
-        self.createShortcutSubviews(shortcutsView)
+        self.createInputOutputSubviews2(inputOutputView.getSubview(5))
     }
 
-    func createShortcutSubviews(_ shortcutsView: UIView) {
-        let buttonHeightFullRatio: CGFloat = 0.13
-        let shortcutsCardView = AmCardView()
-        shortcutsCardView.translatesAutoresizingMaskIntoConstraints = false
-        shortcutsView.addSubview(shortcutsCardView)
-        shortcutsCardView.topAnchor.constraint(equalTo: shortcutsView.topAnchor, constant: 10).isActive = true
-        shortcutsCardView.leftAnchor.constraint(equalTo: shortcutsView.leftAnchor, constant: 5).isActive = true
-        shortcutsCardView.rightAnchor.constraint(equalTo: shortcutsView.rightAnchor, constant: -5).isActive = true
-        shortcutsCardView.bottomAnchor.constraint(equalTo: shortcutsView.bottomAnchor, constant: -10).isActive = true
+    func createKeyboardSubviews(_ keyboardView: UIView) {
+        let numpadContainerView = AmCardView()
+        numpadContainerView.translatesAutoresizingMaskIntoConstraints = false
+        keyboardView.addSubview(numpadContainerView)
+        numpadContainerView.topAnchor.constraint(equalTo: keyboardView.topAnchor, constant: 10).isActive = true
+        numpadContainerView.bottomAnchor.constraint(equalTo: keyboardView.bottomAnchor, constant: -5).isActive = true
+        numpadContainerView.leftAnchor.constraint(equalTo: keyboardView.leftAnchor, constant: 5).isActive = true
+        numpadContainerView.rightAnchor.constraint(equalTo: keyboardView.rightAnchor, constant: -5).isActive = true
+        let numpadButtons = self.createNumpadButtons()
 
-        let shortcutsCardSubView = shortcutsCardView.getSubview(5)
-        let shortcutsIntroLabel = UILabel()
-        shortcutsIntroLabel.textAlignment = .center
-        shortcutsIntroLabel.text = IntroLabelTitles.shortcutsIntroLabelText
-        shortcutsIntroLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 7)
-        shortcutsIntroLabel.textColor = ConverterMainViewController.inputFieldInactiveFontColor
-        shortcutsCardView.addSubview(shortcutsIntroLabel)
-        shortcutsIntroLabel.translatesAutoresizingMaskIntoConstraints = false
-        shortcutsIntroLabel.leftAnchor.constraint(equalTo: shortcutsCardView.leftAnchor, constant: 0).isActive = true
-        shortcutsIntroLabel.rightAnchor.constraint(equalTo: shortcutsCardView.rightAnchor, constant: 0).isActive = true
-        shortcutsIntroLabel.topAnchor.constraint(equalTo: shortcutsCardView.topAnchor, constant: 0).isActive = true
-        shortcutsIntroLabel.heightAnchor.constraint(equalToConstant: 9).isActive = true
-
-        let shortcuts = ShortcutHelper.getDefinedShortcuts(self.predefinedCoversionSets)
-        let rootStackView = UIStackView()
-
-        shortcutsCardSubView.addSubview(rootStackView)
-        shortcutsCardSubView.backgroundColor = ConverterMainViewController.basicBackgroundColor
-        rootStackView.axis = .horizontal
-        rootStackView.spacing = 4
-        rootStackView.distribution = .fillEqually
-        rootStackView.alignment = .top
-        rootStackView.translatesAutoresizingMaskIntoConstraints = false
-        rootStackView.leftAnchor.constraint(equalTo: shortcutsCardSubView.leftAnchor, constant: 5).isActive = true
-        rootStackView.topAnchor.constraint(equalTo: shortcutsIntroLabel.bottomAnchor, constant: 0).isActive = true
-        rootStackView.rightAnchor.constraint(equalTo: shortcutsCardSubView.rightAnchor, constant: -5).isActive = true
-        rootStackView.bottomAnchor.constraint(equalTo: shortcutsCardSubView.bottomAnchor, constant: -5).isActive = true
-
-        let stackViews = [UIStackView(), UIStackView(), UIStackView(), UIStackView()]
-        for (stackIndex, stackView) in stackViews.enumerated() {
-            rootStackView.addArrangedSubview(stackView)
-            stackView.axis = .vertical
-            stackView.spacing = 4
-            for (scIndex, shortcut) in shortcuts.enumerated() {
-                if scIndex % stackViews.count == stackIndex {
-                    let scButtonView = AmShadowButton()
-
-                    let scButton = scButtonView.getRealButton(1)
-                    scButton.setTitle("\(shortcut.displayName)", for: .normal)
-                    scButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 17)
-                    scButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
-                    scButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
-                    scButton.tag = scIndex
-                    scButton.addTarget(self, action: #selector(shortcutButtonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
-                    stackView.addArrangedSubview(scButtonView)
-                    scButtonView.heightAnchor.constraint(equalTo: rootStackView.heightAnchor, multiplier: buttonHeightFullRatio).isActive = true
-                }
-            }
-        }
+        let numpadRealView = numpadContainerView.getSubview(5)
+        self.fillNumpadStackView(numpadRealView, numpadButtons)
+        numpadRealView.backgroundColor = ConverterMainViewController.basicBackgroundColor
+        numpadRealView.layer.masksToBounds = false
+        numpadRealView.layer.shadowColor = UIColor.gray.cgColor
+        numpadRealView.layer.shadowOffset = CGSize(width: 0, height: 0)
+        numpadRealView.layer.shadowRadius = 4
+        numpadRealView.layer.shadowOpacity = 0.5
     }
 
-    func createInputOutputSubviews2(_ inputOutputView: UIView, _ keyboardHeight: CGFloat) {
+    func createInputOutputSubviews2(_ inputOutputView: UIView) {
         // mode: up & bottom mode
         let equalSignHeightRatio: CGFloat = 0.08
         let equalSignRightDistance: CGFloat = 55
@@ -541,9 +505,10 @@ class ConverterMainViewController: UIViewController {
         self.lowerShortNameLabel = UILabel()
         self.createInputOutputContainerSubviews(lowerContainerView, self.lowerInputTextField, self.lowerLongNameButton, self.lowerShortNameLabel, false)
 
-        let numpadView = self.createNumpadView(keyboardHeight)
-        self.lowerInputTextField.inputView = numpadView
-        self.upperInputTextField.inputView = numpadView
+        self.lowerInputTextField.inputView = UIView()
+        self.lowerInputTextField.delegate = self
+        self.upperInputTextField.inputView = UIView()
+        self.upperInputTextField.delegate = self
 
         self.leftColorBarView = leftColorView
         self.lowerLongNameButton.button!.tag = ConverterMainViewController.lowerLongNameButtonTag
@@ -600,44 +565,6 @@ class ConverterMainViewController: UIViewController {
         inputTextField.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -20).isActive = true
         inputTextField.bottomAnchor.constraint(equalTo: shortNameLabel.topAnchor, constant: 10).isActive = true
         inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
-
-        inputTextField.delegate = self.inputTextFieldDelegate
-
-        if isUpper {
-            let converterIntroLabel = UILabel()
-            converterIntroLabel.textAlignment = .center
-            converterIntroLabel.text = IntroLabelTitles.converterIntroLabelText
-            converterIntroLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 7)
-            converterIntroLabel.textColor = ConverterMainViewController.inputFieldInactiveFontColor
-            containerView.addSubview(converterIntroLabel)
-            converterIntroLabel.translatesAutoresizingMaskIntoConstraints = false
-            converterIntroLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 0).isActive = true
-            converterIntroLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: 0).isActive = true
-            converterIntroLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0).isActive = true
-            converterIntroLabel.heightAnchor.constraint(equalToConstant: 8).isActive = true
-        }
-    }
-
-    func createNumpadView(_ height: CGFloat) -> UIView {
-        let numpadRootView = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: height))
-        let numpadContainerView = UIView()
-        numpadContainerView.translatesAutoresizingMaskIntoConstraints = false
-        numpadRootView.addSubview(numpadContainerView)
-        numpadContainerView.topAnchor.constraint(equalTo: numpadRootView.topAnchor, constant: 0).isActive = true
-        numpadContainerView.bottomAnchor.constraint(equalTo: numpadRootView.bottomAnchor, constant: 0).isActive = true
-        numpadContainerView.leftAnchor.constraint(equalTo: numpadRootView.leftAnchor, constant: 0).isActive = true
-        numpadContainerView.rightAnchor.constraint(equalTo: numpadRootView.rightAnchor, constant: 0).isActive = true
-        let numpadButtons = self.createNumpadButtons()
-        self.fillNumpadStackView(numpadContainerView, numpadButtons)
-        numpadContainerView.backgroundColor = ConverterMainViewController.secondBackgroundColor
-
-        numpadContainerView.layer.masksToBounds = false
-        numpadContainerView.layer.shadowColor = UIColor.gray.cgColor
-        numpadContainerView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        numpadContainerView.layer.shadowRadius = 4
-        numpadContainerView.layer.shadowOpacity = 0.5
-
-        return numpadRootView
     }
 
     func createNumpadButtons() -> [AmButton] {
@@ -690,7 +617,7 @@ class ConverterMainViewController: UIViewController {
         numDotButton.tag = 11
 
         let backspaceButton = AmButton()
-        backspaceButton.setTitle("⎋", for: .normal)
+        backspaceButton.setTitle("⌫", for: .normal)
         backspaceButton.tag = 12
 
         let clearButton = AmButton()
@@ -779,28 +706,6 @@ class ConverterMainViewController: UIViewController {
         }
     }
 
-    func resetShortcutButtonColor() {
-        if self.selectedShortcutButton != nil {
-            self.selectedShortcutButton!.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
-        }
-    }
-
-    @objc func shortcutButtonTouchUpInside(_ sender: UIButton) {
-        if let shadowButton = sender as? AmButton {
-            if self.selectedShortcutButton != nil {
-                self.selectedShortcutButton!.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
-            }
-
-            self.selectedShortcutButton = shadowButton
-            shadowButton.setBackgroundColor(color: ConverterMainViewController.secondaryButtonColor, forState: .normal)
-        }
-
-        let shortcut = ShortcutHelper.getDefinedShortcut(self.predefinedCoversionSets, sender.tag)
-        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.leftItem), .upper)
-        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(shortcut.rightItem), .lower)
-        self.getCalcResult(.upper, true)
-    }
-
     @objc func longNameButtonTouchUpInside(_ sender: UIButton) {
         // pass the long name button as sender
         self.performSegue(withIdentifier: "mainToUnitSelection", sender: sender)
@@ -808,16 +713,29 @@ class ConverterMainViewController: UIViewController {
 
     @objc func numpadButtonTouchUpInside(_ sender: UIButton) {
         let inputMode = self.getInputMode()
-        if sender.tag >= 0 && sender.tag <= 11 {
+        if sender.tag >= 0 && sender.tag <= 13 {
             self.applyNumpadInput(sender.tag, inputMode)
-        } else if sender.tag == 13 {
-            self.applyNumpadInput(sender.tag, inputMode)
-        } else if sender.tag == 12 {
-            let responder = self.getFistResponder()
-            responder.resignFirstResponder()
         } else if sender.tag == 15 {
             self.getCalcResult(inputMode, false)
         }
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.previousInputMode = self.getInputMode()
+        textField.textColor = ConverterMainViewController.inputFieldActivateFontColor
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.textColor = ConverterMainViewController.inputFieldInactiveFontColor
+    }
+
+    func loadLogItem(_ logItem: QueryLogItem) {
+        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(logItem.fromUnit), .upper)
+        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(logItem.toUnit), .lower)
+        self.applyInputNum(Decimal(string: logItem.from)!, .upper)
+        self.applyInputNum(Decimal(string: logItem.to)!, .lower)
+
+        self.setInputMode(.upper)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

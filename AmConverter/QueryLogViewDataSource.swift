@@ -14,88 +14,55 @@ class QueryLogItem {
     }
 }
 
-class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    static let CollectionCellId = "queryLogViewDataCellId"
-    static let cellWidthRatio = CGFloat(1.0 / 3.75)
-    static let queryDigitColor = UIColor(red: 123.0 / 255, green: 124.0 / 255, blue: 124.0 / 255, alpha: 1)
+class QueryLogViewCell : UICollectionViewCell {
+    var converterController: ConverterMainViewController!
+    var initialized = false
 
-    var collectionView: UICollectionView!
+    var logItem: QueryLogItem!
 
-    var dataSourceCollection: [QueryLogItem] = []
+    var upperShortNameLabel: UILabel!
+    var lowerShortNameLabel: UILabel!
+    var upperDigitLabel: UILabel!
+    var lowerDigitLabel: UILabel!
 
-    func appendLogItem(_ logItem: QueryLogItem) {
-        var found = false
-        for sourceItem in self.dataSourceCollection {
-            if sourceItem.from == logItem.from && sourceItem.to == logItem.to && sourceItem.fromUnit == logItem.fromUnit && sourceItem.toUnit == logItem.toUnit {
-                found = true
-            }
+    func load(_ item: QueryLogItem) {
+        if !self.initialized {
+            self.initialized = true
+            let logItemView = AmCardView()
+            self.contentView.backgroundColor = .clear
+            self.contentView.addSubview(logItemView)
+            logItemView.translatesAutoresizingMaskIntoConstraints = false
+            logItemView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
+            logItemView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -10).isActive = true
+            logItemView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 5).isActive = true
+            logItemView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
+
+            let logItemContentView = logItemView.getSubview(5)
+            logItemContentView.backgroundColor = ConverterMainViewController.basicBackgroundColor
+            logItemView.layer.shadowColor = UIColor.black.cgColor
+            logItemView.layer.shadowRadius = 6
+            self.fillHistoryCardContent(logItemContentView)
+
+            let tapRecg = UITapGestureRecognizer(target: self, action: #selector(self.tap(_:)))
+            logItemContentView.addGestureRecognizer(tapRecg)
         }
 
-        if !found {
-            let indexPath = IndexPath(item: 0, section: 0)
-            self.dataSourceCollection.insert(logItem, at: 0)
-            self.collectionView.insertItems(at: [indexPath])
-            self.collectionView.scrollToItem(at: indexPath, at: .left, animated: true)
+        self.logItem = item
 
-            if self.dataSourceCollection.count > 1 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    // reload second item to remove the hint label
-                    self.collectionView.reloadItems(at: [IndexPath(item: 1, section: 0)])
-                }
+        let upperUnitName = UnitConversionHelper.getUnitItemShortName(item.fromUnit)
+        self.upperShortNameLabel.text = upperUnitName
+        self.upperDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: item.from)!, 5).description
 
-                if self.dataSourceCollection.count > 10 {
-                    let removeIndex = self.dataSourceCollection.count - 1
-                    self.dataSourceCollection.remove(at: removeIndex)
-                    self.collectionView.deleteItems(at: [IndexPath(item: removeIndex, section: 0)])
-                }
-            }
-        }
+        let lowerUnitName = UnitConversionHelper.getUnitItemShortName(item.toUnit)
+        self.lowerShortNameLabel.text = lowerUnitName
+        self.lowerDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: item.to)!, 5).description
     }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.dataSourceCollection.count
+    @objc func tap(_ sender: UITapGestureRecognizer) {
+        self.converterController.loadLogItem(self.logItem)
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: QueryLogViewDataSource.CollectionCellId, for: indexPath)
-        let logItem = self.dataSourceCollection[indexPath.item]
-
-        let logItemView = AmCardView()
-        cell.contentView.backgroundColor = .clear
-        cell.contentView.addSubview(logItemView)
-        logItemView.translatesAutoresizingMaskIntoConstraints = false
-        logItemView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 9).isActive = true
-        logItemView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -10).isActive = true
-        logItemView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor, constant: 5).isActive = true
-        logItemView.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: 0).isActive = true
-
-        let logItemContentView = logItemView.getSubview(5)
-        logItemContentView.backgroundColor = ConverterMainViewController.basicBackgroundColor
-        logItemView.layer.shadowColor = UIColor.black.cgColor
-        logItemView.layer.shadowRadius = 6
-        self.fillHistoryCardContent(logItemContentView, logItem)
-        if indexPath.item == 0 {
-            let historyIntroLabel = UILabel()
-            historyIntroLabel.textAlignment = .center
-            historyIntroLabel.text = IntroLabelTitles.historyIntroLabelText
-            historyIntroLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 7)
-            historyIntroLabel.textColor = ConverterMainViewController.inputFieldInactiveFontColor
-            logItemContentView.addSubview(historyIntroLabel)
-            historyIntroLabel.translatesAutoresizingMaskIntoConstraints = false
-            historyIntroLabel.leftAnchor.constraint(equalTo: logItemContentView.leftAnchor, constant: 0).isActive = true
-            historyIntroLabel.rightAnchor.constraint(equalTo: logItemContentView.rightAnchor, constant: 0).isActive = true
-            historyIntroLabel.topAnchor.constraint(equalTo: logItemContentView.topAnchor, constant: 0).isActive = true
-            historyIntroLabel.heightAnchor.constraint(equalToConstant: 8).isActive = true
-        }
-
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width * QueryLogViewDataSource.cellWidthRatio, height: collectionView.bounds.height)
-    }
-
-    func fillHistoryCardContent(_ contentView: UIView, _ logItem: QueryLogItem) {
+    func fillHistoryCardContent(_ contentView: UIView) {
         let upperContainer = UIView()
         let lowerContainer = UIView()
 
@@ -144,23 +111,18 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         equalSign.topAnchor.constraint(equalTo: upperContainer.bottomAnchor, constant: 0).isActive = true
         equalSign.bottomAnchor.constraint(equalTo: lowerContainer.topAnchor, constant: 0).isActive = true
 
-        let upperShortNameLabel = UILabel()
-        let lowerShortNameLabel = UILabel()
+        self.upperShortNameLabel = UILabel()
+        self.lowerShortNameLabel = UILabel()
 
-        let upperUnitName = UnitConversionHelper.getUnitItemShortName(logItem.fromUnit)
-        upperShortNameLabel.text = upperUnitName
         upperShortNameLabel.textColor = .black
         upperShortNameLabel.textAlignment = .center
         upperShortNameLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 10)
 
-        let lowerUnitName = UnitConversionHelper.getUnitItemShortName(logItem.toUnit)
-        lowerShortNameLabel.text = lowerUnitName
         lowerShortNameLabel.textColor = .black
         lowerShortNameLabel.textAlignment = .center
         lowerShortNameLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 10)
 
-        let upperDigitLabel = UILabel()
-        upperDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.from)!, 5).description
+        self.upperDigitLabel = UILabel()
         upperDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
         upperDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         upperDigitLabel.textAlignment = .center
@@ -180,8 +142,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         upperShortNameLabel.topAnchor.constraint(equalTo: upperDigitLabel.bottomAnchor, constant: 2).isActive = true
         upperShortNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
 
-        let lowerDigitLabel = UILabel()
-        lowerDigitLabel.text = ConverterMainViewController.getRoundedNumber(Decimal(string: logItem.to)!, 5).description
+        self.lowerDigitLabel = UILabel()
         lowerDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
         lowerDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         lowerDigitLabel.textAlignment = .center
@@ -200,5 +161,68 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         lowerShortNameLabel.rightAnchor.constraint(equalTo: lowerContainer.rightAnchor, constant: -25).isActive = true
         lowerShortNameLabel.topAnchor.constraint(equalTo: lowerDigitLabel.bottomAnchor, constant: 2).isActive = true
         lowerShortNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
+    }
+}
+
+class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    static let collectionCellLRUKeptNumber = 10
+    static let collectionCellId = "queryLogViewDataCellId"
+    static let cellWidthRatio = CGFloat(1.0 / 3.75)
+    static let queryDigitColor = UIColor(red: 123.0 / 255, green: 124.0 / 255, blue: 124.0 / 255, alpha: 1)
+
+    var collectionView: UICollectionView!
+    var converterController: ConverterMainViewController!
+    var dataSourceCollection: [QueryLogItem] = []
+
+    func appendLogItem(_ logItem: QueryLogItem) {
+        var foundItem: QueryLogItem? = nil
+        var foundIndex: Int = 0
+        for (i, sourceItem) in self.dataSourceCollection.enumerated() {
+            // if there's at least one unit matches...
+            if sourceItem.fromUnit == logItem.fromUnit || sourceItem.toUnit == logItem.toUnit
+            || sourceItem.fromUnit == logItem.toUnit && sourceItem.toUnit == logItem.fromUnit {
+                foundItem = sourceItem
+                foundIndex = i
+                break
+            }
+        }
+
+        if let uFoundItem = foundItem {
+            uFoundItem.fromUnit = logItem.fromUnit
+            uFoundItem.toUnit = logItem.toUnit
+            uFoundItem.from = logItem.from
+            uFoundItem.to = logItem.to
+
+            let indexPath = IndexPath(item: foundIndex, section: 0)
+            self.collectionView.reloadItems(at: [indexPath])
+        } else {
+            let indexPath = IndexPath(item: 0, section: 0)
+            self.dataSourceCollection.insert(logItem, at: 0)
+            self.collectionView.insertItems(at: [indexPath])
+            self.collectionView.scrollToItem(at: indexPath, at: .left, animated: true)
+
+            if self.dataSourceCollection.count > QueryLogViewDataSource.collectionCellLRUKeptNumber {
+                let removeIndex = self.dataSourceCollection.count - 1
+                self.dataSourceCollection.remove(at: removeIndex)
+                self.collectionView.deleteItems(at: [IndexPath(item: removeIndex, section: 0)])
+            }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.dataSourceCollection.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: QueryLogViewDataSource.collectionCellId, for: indexPath) as? QueryLogViewCell else { return UICollectionViewCell() }
+
+        let logItem = self.dataSourceCollection[indexPath.item]
+        cell.load(logItem)
+        cell.converterController = self.converterController
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.bounds.width * QueryLogViewDataSource.cellWidthRatio, height: collectionView.bounds.height)
     }
 }
