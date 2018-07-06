@@ -82,8 +82,7 @@ class AmCardView: UIView {
             self.addSubview(subview)
             subview.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
             subview.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
-            let leftConstraint = subview.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0)
-            leftConstraint.isActive = true
+            subview.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
             subview.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
             subview.layer.cornerRadius = radius
             subview.clipsToBounds = true

@@ -11,7 +11,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     static let keptDigitNumbers = 8
     static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
-    static let introFontName: String = "AmericanTypewriter"
     static let upperLongNameButtonTag: Int = 1001
     static let lowerLongNameButtonTag: Int = 1002
 
@@ -56,6 +55,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     var sideAnimationDelegate: SideAnimationDelegate? = nil
 
     var previousInputMode: InputMode = .upper
+    var nextInputClean: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -134,6 +134,10 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
         // Digits
         if tag >= 0 && tag <= 9 {
+            if self.nextInputClean {
+                originStr = "0"
+            }
+
             if originStr == "0" || originStr == "" {
                 originStr = String(tag)
             } else if originStr == "-0" {
@@ -172,6 +176,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             originStr = "0"
         }
 
+        self.nextInputClean = false
         let field = self.getFirstResponder()
         field.text = originStr
         if inMode == .lower {
@@ -716,6 +721,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         if sender.tag >= 0 && sender.tag <= 13 {
             self.applyNumpadInput(sender.tag, inputMode)
         } else if sender.tag == 15 {
+            self.nextInputClean = true
             self.getCalcResult(inputMode, false)
         }
     }

@@ -15,6 +15,8 @@ class QueryLogItem {
 }
 
 class QueryLogViewCell : UICollectionViewCell {
+    static let unitFontName = "AmericanTypewriter"
+
     var converterController: ConverterMainViewController!
     var initialized = false
 
@@ -102,7 +104,7 @@ class QueryLogViewCell : UICollectionViewCell {
         equalSign.textAlignment = .center
         equalSign.textColor = .black
         equalSign.text = "="
-        equalSign.font = UIFont(name: ConverterMainViewController.introFontName, size: 14)
+        equalSign.font = UIFont(name: QueryLogViewCell.unitFontName, size: 14)
         equalSign.backgroundColor = ConverterMainViewController.basicBackgroundColor
         contentView.addSubview(equalSign)
         equalSign.translatesAutoresizingMaskIntoConstraints = false
@@ -116,11 +118,11 @@ class QueryLogViewCell : UICollectionViewCell {
 
         upperShortNameLabel.textColor = .black
         upperShortNameLabel.textAlignment = .center
-        upperShortNameLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 10)
+        upperShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 10)
 
         lowerShortNameLabel.textColor = .black
         lowerShortNameLabel.textAlignment = .center
-        lowerShortNameLabel.font = UIFont(name: ConverterMainViewController.introFontName, size: 10)
+        lowerShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 10)
 
         self.upperDigitLabel = UILabel()
         upperDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
