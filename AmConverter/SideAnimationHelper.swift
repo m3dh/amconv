@@ -34,7 +34,8 @@ class SideDismissMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         UIView.animate(
             withDuration: self.transitionDuration(using: transitionContext),
             animations: {
-                snapshot.frame = CGRect(origin: CGPoint.zero, size: UIScreen.main.bounds.size)
+                snapshot.alpha = 1
+                fromController.view.center.y += UIScreen.main.bounds.height * SideMenuHelper.menuHeightPercent
         },
             completion: { _ in
                 if !transitionContext.transitionWasCancelled {
@@ -65,26 +66,23 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 return
         }
 
-        // Insert the to controller view below the from view
-        transitionContext.containerView.insertSubview(toController.view, belowSubview: fromController.view)
-
         // Create a snapshot (a picture) of current (from) view.
         let snapshot = fromController.view.snapshotView(afterScreenUpdates: false)!
         snapshot.tag = SideMenuHelper.snapshotTagNumber
         snapshot.isUserInteractionEnabled = false
-        snapshot.layer.shadowOpacity = 0.7
-        transitionContext.containerView.insertSubview(snapshot, aboveSubview: toController.view)
+        transitionContext.containerView.insertSubview(snapshot, aboveSubview: fromController.view)
         fromController.view.isHidden = true
+
+        // Insert the to controller view below the from view
+        transitionContext.containerView.insertSubview(toController.view, aboveSubview: snapshot)
+        let previouCenterY = toController.view.center.y
+        toController.view.center.y += UIScreen.main.bounds.height * SideMenuHelper.menuHeightPercent
 
         UIView.animate(
             withDuration: self.transitionDuration(using: transitionContext),
             animations: {
-                var distance = UIScreen.main.bounds.width * SideMenuHelper.menuWidthPercent
-                if self.direction == .Left {
-                    distance *= -1
-                }
-
-                snapshot.center.x += distance
+                snapshot.alpha = 0.5
+                toController.view.center.y = previouCenterY
         },
             completion: { _ in
                 fromController.view.isHidden = false
@@ -94,6 +92,6 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 }
 
 struct SideMenuHelper {
-    static let menuWidthPercent: CGFloat = 0.85
+    static let menuHeightPercent: CGFloat = 0.5
     static let snapshotTagNumber: Int = 10001
 }

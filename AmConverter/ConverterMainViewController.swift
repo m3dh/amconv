@@ -188,13 +188,17 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     func applyConverter(_ converter: UnitBiConverter, _ inMode: InputMode) {
         if inMode == .upper {
-            self.upperUnitBiConverter = converter
-            self.upperShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.upperUnitBiConverter.unitItem)
-            self.upperLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.upperUnitBiConverter.unitItem) + " ", for: .normal)
+            if self.upperUnitBiConverter == nil || self.upperUnitBiConverter.unitItem != converter.unitItem {
+                self.upperUnitBiConverter = converter
+                self.upperShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.upperUnitBiConverter.unitItem)
+                self.upperLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.upperUnitBiConverter.unitItem) + " ", for: .normal)
+            }
         } else {
-            self.lowerUnitBiConverter = converter
-            self.lowerShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.lowerUnitBiConverter.unitItem)
-            self.lowerLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.lowerUnitBiConverter.unitItem) + " ", for: .normal)
+            if self.lowerUnitBiConverter == nil || self.lowerUnitBiConverter.unitItem != converter.unitItem {
+                self.lowerUnitBiConverter = converter
+                self.lowerShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(self.lowerUnitBiConverter.unitItem)
+                self.lowerLongNameButton.button!.setTitle(" " + UnitConversionHelper.getUnitItemDisplayName(self.lowerUnitBiConverter.unitItem) + " ", for: .normal)
+            }
         }
     }
 
@@ -269,6 +273,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
                             result.append(ch)
                         }
                     }
+
+                    break
                 } else {
                     if ch == "." {
                         afterDot = true
@@ -741,6 +747,14 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         self.applyInputNum(Decimal(string: logItem.from)!, .upper)
         self.applyInputNum(Decimal(string: logItem.to)!, .lower)
         self.setInputMode(.upper)
+    }
+
+    func loadNewUnitPair(_ from: UnitItems, _ to: UnitItems) {
+        if self.upperUnitBiConverter.unitItem != from || self.lowerUnitBiConverter.unitItem != to {
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(from), .upper)
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(to), .lower)
+            self.getCalcResult(self.previousInputMode, true)
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

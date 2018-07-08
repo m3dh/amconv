@@ -29,11 +29,25 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             self.unitItemTo = unitItemTo
 
             if self.unitItemFrom.first(where: { s in s.selected }) == nil {
-
+                if self.unitItemFrom.count > 3 {
+                    self.unitItemFrom[1].selected = true
+                } else {
+                    self.unitItemFrom[0].selected = true
+                }
             }
 
             if self.unitItemTo.first(where: { s in s.selected }) == nil {
-
+                if self.unitItemTo.count > 5 {
+                    self.unitItemTo[4].selected = true
+                } else if self.unitItemTo.count > 4 {
+                    self.unitItemTo[3].selected = true
+                } else if self.unitItemTo.count > 3 {
+                    self.unitItemTo[2].selected = true
+                } else if self.unitItemTo.count > 2 {
+                    self.unitItemTo[1].selected = true
+                } else {
+                    self.unitItemTo[0].selected = true
+                }
             }
         }
     }
@@ -49,6 +63,8 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
     class UnitTypeSelectionCell: UITableViewCell {
         static let selectedBackgroundColor = UIColor(red: 139.0 / 255, green: 196.0 / 255, blue: 233.0 / 255, alpha: 1)
+        static let lightBlueBackgroundColor = UIColor(red: 234.0 / 255, green: 244.0 / 255, blue: 252.0 / 255, alpha: 1)
+        static let unitItemSelectorBackgroundColor = UIColor(red: 225.0 / 255, green: 243.0 / 255, blue: 213.0 / 255, alpha: 1)
 
         var initialized = false
 
@@ -58,12 +74,12 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             if !self.initialized {
                 self.initialized = true
                 self.unitNameLabel = UILabel()
-                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 14)
+                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 15)
                 self.contentView.addSubview(self.unitNameLabel)
                 self.unitNameLabel.translatesAutoresizingMaskIntoConstraints = false
                 self.unitNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
-                self.unitNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 7).isActive = true
-                self.unitNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -7).isActive = true
+                self.unitNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 10).isActive = true
+                self.unitNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
                 self.unitNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
             }
 
@@ -98,7 +114,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
                 self.unitItemShortNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -2).isActive = true
                 self.unitItemShortNameLabel.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, multiplier: 0.55).isActive = true
                 self.unitItemShortNameLabel.textAlignment = .center
-                self.unitItemShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 14)
+                self.unitItemShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 15)
                 self.unitItemShortNameLabel.backgroundColor = .clear
 
                 self.contentView.addSubview(self.unitItemLongNameLabel)
@@ -116,7 +132,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             self.unitItemLongNameLabel.text = UnitConversionHelper.getUnitItemDisplayName(item.unitItem)
 
             if item.selected {
-                self.contentView.backgroundColor = .yellow
+                self.contentView.backgroundColor = UnitTypeSelectionCell.unitItemSelectorBackgroundColor
             } else {
                 self.contentView.backgroundColor = .white
             }
@@ -133,32 +149,47 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         super.viewDidLoad()
         self.initSourceTable()
 
+        self.rootView.backgroundColor = .clear
+        self.view.backgroundColor = .clear
+
         // initialize the (hidden) dismiss button.
         let dismissButton = UIButton()
         self.rootView.addSubview(dismissButton)
+        dismissButton.backgroundColor = .clear
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         dismissButton.topAnchor.constraint(equalTo: self.rootView.topAnchor).isActive = true
-        dismissButton.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor).isActive = true
+        dismissButton.heightAnchor.constraint(equalTo: self.rootView.heightAnchor, multiplier: 1 - SideMenuHelper.menuHeightPercent).isActive = true
         dismissButton.rightAnchor.constraint(equalTo: self.rootView.rightAnchor).isActive = true
-        dismissButton.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: 1.0 - SideMenuHelper.menuWidthPercent).isActive = true
+        dismissButton.leftAnchor.constraint(equalTo: self.rootView.leftAnchor).isActive = true
         dismissButton.addTarget(self, action: #selector(self.dismissToMain), for: .touchUpInside)
+
+        let allSelectorContainer = UIView()
+        self.rootView.addSubview(allSelectorContainer)
+        allSelectorContainer.translatesAutoresizingMaskIntoConstraints = false
+        allSelectorContainer.topAnchor.constraint(equalTo: dismissButton.bottomAnchor, constant: 0).isActive = true
+        allSelectorContainer.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor).isActive = true
+        allSelectorContainer.leftAnchor.constraint(equalTo: self.rootView.leftAnchor).isActive = true
+        allSelectorContainer.rightAnchor.constraint(equalTo: self.rootView.rightAnchor).isActive = true
+        allSelectorContainer.backgroundColor = .white
+
+        allSelectorContainer.layer.shadowColor = UIColor.black.cgColor
+        allSelectorContainer.layer.shadowRadius = 4
+        allSelectorContainer.layer.shadowOffset = CGSize(width: 1, height: 1)
+        allSelectorContainer.layer.shadowOpacity = 0.8
 
         // initialize all the 3 tables
         let cellHeight: CGFloat = 45
         let unitTypeWidthPercent: CGFloat = 0.30
 
         let unitTypeSelectionView = UIView()
-        self.rootView.addSubview(unitTypeSelectionView)
+        allSelectorContainer.addSubview(unitTypeSelectionView)
         unitTypeSelectionView.translatesAutoresizingMaskIntoConstraints = false
-        unitTypeSelectionView.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 0).isActive = true
-        unitTypeSelectionView.leftAnchor.constraint(equalTo: self.rootView.leftAnchor, constant: 0).isActive = true
-        unitTypeSelectionView.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor, constant: 0).isActive = true
-        unitTypeSelectionView.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: unitTypeWidthPercent * SideMenuHelper.menuWidthPercent, constant: -2).isActive = true
+        unitTypeSelectionView.topAnchor.constraint(equalTo: allSelectorContainer.topAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.leftAnchor.constraint(equalTo: allSelectorContainer.leftAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.bottomAnchor.constraint(equalTo: allSelectorContainer.bottomAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.widthAnchor.constraint(equalTo: allSelectorContainer.widthAnchor, multiplier: unitTypeWidthPercent, constant: -2).isActive = true
+        unitTypeSelectionView.backgroundColor = UnitTypeSelectionCell.lightBlueBackgroundColor
 
-        unitTypeSelectionView.backgroundColor = .lightGray
-
-        // unitTypeSelectionView.layer.shadowRadius = 0.8
-        // unitTypeSelectionView.layer.shadowOpacity = 0.5
         self.unitTypeSelectionTable = UITableView()
         self.unitTypeSelectionTable.tag = UnitSelectionViewController.SubTableTags.unitTypeTableTag
         self.unitTypeSelectionTable.register(UnitTypeSelectionCell.self, forCellReuseIdentifier: UnitSelectionViewController.tableViewCellId)
@@ -170,8 +201,8 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         self.unitTypeSelectionTable.separatorStyle = .none
         self.unitTypeSelectionTable.dragInteractionEnabled = false
         self.unitTypeSelectionTable.translatesAutoresizingMaskIntoConstraints = false
-        self.unitTypeSelectionTable.leftAnchor.constraint(equalTo: unitTypeSelectionView.leftAnchor, constant: 1).isActive = true
-        self.unitTypeSelectionTable.topAnchor.constraint(equalTo: unitTypeSelectionView.topAnchor, constant: 55).isActive = true
+        self.unitTypeSelectionTable.leftAnchor.constraint(equalTo: unitTypeSelectionView.leftAnchor, constant: 0).isActive = true
+        self.unitTypeSelectionTable.topAnchor.constraint(equalTo: unitTypeSelectionView.topAnchor, constant: 2).isActive = true
         self.unitTypeSelectionTable.heightAnchor.constraint(equalToConstant: cellHeight * CGFloat(self.selectionSource.count)).isActive = true
         self.unitTypeSelectionTable.widthAnchor.constraint(equalTo: unitTypeSelectionView.widthAnchor).isActive = true
         self.unitTypeSelectionTable.bounces = false
@@ -181,20 +212,33 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
         self.unitItemFromSelectionTable = UITableView()
         self.unitItemFromSelectionTable.tag = UnitSelectionViewController.SubTableTags.unitItemFromTableTag
-        self.rootView.addSubview(self.unitItemFromSelectionTable)
+        allSelectorContainer.addSubview(self.unitItemFromSelectionTable)
         self.unitItemFromSelectionTable.register(UnitItemSelectionCell.self, forCellReuseIdentifier: UnitSelectionViewController.tableViewCellId)
         self.unitItemFromSelectionTable.dataSource = self
         self.unitItemFromSelectionTable.delegate = self
         self.unitItemFromSelectionTable.rowHeight = cellHeight
         self.unitItemFromSelectionTable.backgroundView = nil
         self.unitItemFromSelectionTable.separatorStyle = .none
-        self.unitItemFromSelectionTable.dragInteractionEnabled = false
         self.unitItemFromSelectionTable.translatesAutoresizingMaskIntoConstraints = false
         self.unitItemFromSelectionTable.leftAnchor.constraint(equalTo: unitTypeSelectionView.rightAnchor, constant: 2).isActive = true
-        self.unitItemFromSelectionTable.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 10).isActive = true
-        self.unitItemFromSelectionTable.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor).isActive = true
-        self.unitItemFromSelectionTable.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: (1 - unitTypeWidthPercent) / 2 * SideMenuHelper.menuWidthPercent, constant: -2).isActive = true
-        self.unitItemFromSelectionTable.backgroundColor = .clear
+        self.unitItemFromSelectionTable.topAnchor.constraint(equalTo: allSelectorContainer.topAnchor, constant: 2).isActive = true
+        self.unitItemFromSelectionTable.bottomAnchor.constraint(equalTo: allSelectorContainer.bottomAnchor).isActive = true
+        self.unitItemFromSelectionTable.widthAnchor.constraint(equalTo: allSelectorContainer.widthAnchor, multiplier: (1 - unitTypeWidthPercent) / 2, constant: -1).isActive = true
+
+        self.unitItemToSelectionTable = UITableView()
+        self.unitItemToSelectionTable.tag = UnitSelectionViewController.SubTableTags.unitItemToTableTag
+        allSelectorContainer.addSubview(self.unitItemToSelectionTable)
+        self.unitItemToSelectionTable.register(UnitItemSelectionCell.self, forCellReuseIdentifier: UnitSelectionViewController.tableViewCellId)
+        self.unitItemToSelectionTable.dataSource = self
+        self.unitItemToSelectionTable.delegate = self
+        self.unitItemToSelectionTable.rowHeight = cellHeight
+        self.unitItemToSelectionTable.backgroundView = nil
+        self.unitItemToSelectionTable.separatorStyle = .none
+        self.unitItemToSelectionTable.translatesAutoresizingMaskIntoConstraints = false
+        self.unitItemToSelectionTable.leftAnchor.constraint(equalTo: self.unitItemFromSelectionTable.rightAnchor, constant: 2).isActive = true
+        self.unitItemToSelectionTable.topAnchor.constraint(equalTo: allSelectorContainer.topAnchor, constant: 2).isActive = true
+        self.unitItemToSelectionTable.bottomAnchor.constraint(equalTo: allSelectorContainer.bottomAnchor).isActive = true
+        self.unitItemToSelectionTable.widthAnchor.constraint(equalTo: allSelectorContainer.widthAnchor, multiplier: (1 - unitTypeWidthPercent) / 2, constant: -1).isActive = true
     }
 
     func initSourceTable() {
@@ -254,9 +298,47 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
             tableView.reloadRows(at: reloading, with: .none)
             self.unitItemFromSelectionTable.reloadData()
+            self.unitItemToSelectionTable.reloadData()
         } else if tableView.tag == UnitSelectionViewController.SubTableTags.unitItemFromTableTag {
+            var alreadySelected = false
+            var reloading = [IndexPath]()
+            for (i, s) in self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.enumerated() {
+                if i == indexPath.item {
+                    alreadySelected = s.selected
+                    s.selected = true
+                    reloading.append(IndexPath(item: i, section: 0))
+                } else {
+                    s.selected = false
+                    reloading.append(IndexPath(item: i, section: 0))
+                }
+            }
 
+            tableView.reloadRows(at: reloading, with: .none)
+            self.converterController.loadNewUnitPair(
+                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.first(where: {i in i.selected})!.unitItem,
+                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.first(where: {i in i.selected})!.unitItem)
+
+            if alreadySelected {
+                self.dismissToMain()
+            }
         } else { // unitItemToTableTag
+            var reloading = [IndexPath]()
+            for (i, s) in self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.enumerated() {
+                if i == indexPath.item {
+                    s.selected = true
+                    reloading.append(IndexPath(item: i, section: 0))
+                } else {
+                    s.selected = false
+                    reloading.append(IndexPath(item: i, section: 0))
+                }
+            }
+
+            tableView.reloadRows(at: reloading, with: .none)
+            self.converterController.loadNewUnitPair(
+                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.first(where: {i in i.selected})!.unitItem,
+                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.first(where: {i in i.selected})!.unitItem)
+
+            self.dismissToMain()
         }
     }
 
@@ -286,9 +368,12 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             cell.load(self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom[indexPath.item])
             return cell
         } else { // unitItemToTableTag
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: UnitSelectionViewController.tableViewCellId) as? UnitItemSelectionCell else {
+                return UITableViewCell()
+            }
 
+            cell.load(self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo[indexPath.item])
+            return cell
         }
-
-        return UITableViewCell()
     }
 }
