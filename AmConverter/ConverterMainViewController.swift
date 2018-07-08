@@ -104,6 +104,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     func applyInputNum(_ num: Decimal, _ inMode: InputMode) {
         var realNum = num
         if num.isNormal {
+            print("calc result : \(num.description)")
             realNum = ConverterMainViewController.getRoundedNumber(num, ConverterMainViewController.keptDigitNumbers)
         }
 
