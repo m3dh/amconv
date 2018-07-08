@@ -1,5 +1,12 @@
 import UIKit
 
+// TODO:
+//   1.
+//   2. force touch shortcuts.
+//   3. localization.
+//   -
+//   4. button icons implementation. (enhancements)
+
 // UITextFieldDelegate for input output view text fields.
 class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     enum InputMode {
@@ -10,7 +17,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     static let rootSubViewDistance: CGFloat = 5
 
     static let keptDigitNumbers = 8
-    static let fontName: String = "KohinoorBangla-Regular" // "KohinoorDevanagari-Light"
+    static let fontName: String = "ArialMT" // "KohinoorDevanagari-Light"
+    static let wideFontName: String = ""
     static let upperLongNameButtonTag: Int = 1001
     static let lowerLongNameButtonTag: Int = 1002
 
@@ -367,7 +375,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         xBarTitle.translatesAutoresizingMaskIntoConstraints = false
         xBarTitle.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
         xBarTitle.textAlignment = .center
-        xBarTitle.text = "Yet Another Unit Converter"
+        xBarTitle.text = "Unit Converter"
         xBarTitle.textColor = .white
         xBarTitle.topAnchor.constraint(equalTo: xBarView.topAnchor, constant: 8).isActive = true
         xBarTitle.leftAnchor.constraint(equalTo: xBarView.leftAnchor).isActive = true
@@ -641,7 +649,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         copyButton.tag = 14
 
         let enterButton = AmButton()
-        enterButton.setTitle("⏎", for: .normal)
+        enterButton.setTitle("⇋", for: .normal)
         enterButton.setBackgroundColor(color: ConverterMainViewController.inputFieldActivateFontColor, forState: .normal)
         enterButton.tag = 15
 
@@ -727,6 +735,19 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         let inputMode = self.getInputMode()
         if sender.tag >= 0 && sender.tag <= 13 {
             self.applyNumpadInput(sender.tag, inputMode)
+        } else if sender.tag == 14 {
+            var dataStr = ""
+            if inputMode == .upper {
+                dataStr = self.upperInputTempString!
+            } else {
+                dataStr = self.lowerInputTempString!
+            }
+
+            if dataStr == "" || dataStr == "-" {
+                dataStr = "0"
+            }
+
+            UIPasteboard.general.string = dataStr
         } else if sender.tag == 15 {
             self.nextInputClean = true
             self.getCalcResult(inputMode, false)

@@ -74,7 +74,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             if !self.initialized {
                 self.initialized = true
                 self.unitNameLabel = UILabel()
-                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 15)
+                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 16)
                 self.contentView.addSubview(self.unitNameLabel)
                 self.unitNameLabel.translatesAutoresizingMaskIntoConstraints = false
                 self.unitNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
@@ -109,22 +109,22 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
                 self.contentView.addSubview(self.unitItemShortNameLabel)
                 self.unitItemShortNameLabel.translatesAutoresizingMaskIntoConstraints = false
-                self.unitItemShortNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 2).isActive = true
+                self.unitItemShortNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
                 self.unitItemShortNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 2).isActive = true
                 self.unitItemShortNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -2).isActive = true
-                self.unitItemShortNameLabel.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, multiplier: 0.55).isActive = true
+                self.unitItemShortNameLabel.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, multiplier: 0.45).isActive = true
                 self.unitItemShortNameLabel.textAlignment = .center
-                self.unitItemShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 15)
+                self.unitItemShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 16)
                 self.unitItemShortNameLabel.backgroundColor = .clear
 
                 self.contentView.addSubview(self.unitItemLongNameLabel)
                 self.unitItemLongNameLabel.translatesAutoresizingMaskIntoConstraints = false
-                self.unitItemLongNameLabel.topAnchor.constraint(equalTo: self.unitItemShortNameLabel.bottomAnchor, constant: 3).isActive = true
-                self.unitItemLongNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -2).isActive = true
+                self.unitItemLongNameLabel.topAnchor.constraint(equalTo: self.unitItemShortNameLabel.bottomAnchor, constant: 1).isActive = true
+                self.unitItemLongNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: 0).isActive = true
                 self.unitItemLongNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 0).isActive = true
                 self.unitItemLongNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
                 self.unitItemLongNameLabel.textAlignment = .center
-                self.unitItemLongNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 10)
+                self.unitItemLongNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 12)
                 self.unitItemLongNameLabel.textColor = .lightGray
             }
 
@@ -178,7 +178,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         allSelectorContainer.layer.shadowOpacity = 0.8
 
         // initialize all the 3 tables
-        let cellHeight: CGFloat = 45
+        let cellHeight: CGFloat = 50
         let unitTypeWidthPercent: CGFloat = 0.30
 
         let unitTypeSelectionView = UIView()
@@ -274,6 +274,9 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
     }
 
     @objc func dismissToMain() {
+        self.converterController.loadNewUnitPair(
+            self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.first(where: {i in i.selected})!.unitItem,
+            self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.first(where: {i in i.selected})!.unitItem)
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -314,10 +317,6 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             }
 
             tableView.reloadRows(at: reloading, with: .none)
-            self.converterController.loadNewUnitPair(
-                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.first(where: {i in i.selected})!.unitItem,
-                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.first(where: {i in i.selected})!.unitItem)
-
             if alreadySelected {
                 self.dismissToMain()
             }
@@ -334,10 +333,6 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             }
 
             tableView.reloadRows(at: reloading, with: .none)
-            self.converterController.loadNewUnitPair(
-                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom.first(where: {i in i.selected})!.unitItem,
-                self.selectionSource[self.currentUnitTypeSourceIndex].unitItemTo.first(where: {i in i.selected})!.unitItem)
-
             self.dismissToMain()
         }
     }
