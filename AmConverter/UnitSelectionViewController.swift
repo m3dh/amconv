@@ -7,10 +7,11 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         static let unitItemToTableTag = 2
     }
 
+    @IBOutlet weak var rootView: UIView!
+
     static let tableViewCellId = "unitSelectionViewCellId"
     var selectionSource: [UnitTypeSelection]!
     var converterController: ConverterMainViewController!
-
     var currentUnitTypeSourceIndex: Int = 0
     var unitTypeSelectionTable: UITableView!
     var unitItemFromSelectionTable: UITableView!
@@ -26,6 +27,14 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             self.unitType = unitType
             self.unitItemFrom = unitItemFrom
             self.unitItemTo = unitItemTo
+
+            if self.unitItemFrom.first(where: { s in s.selected }) == nil {
+
+            }
+
+            if self.unitItemTo.first(where: { s in s.selected }) == nil {
+
+            }
         }
     }
 
@@ -72,6 +81,46 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
     class UnitItemSelectionCell: UITableViewCell {
         var initialized = false
+
+        var unitItemShortNameLabel: UILabel!
+        var unitItemLongNameLabel: UILabel!
+
+        func load(_ item: UnitItemSelection) {
+            if !self.initialized {
+                self.initialized = true
+                self.unitItemShortNameLabel = UILabel()
+                self.unitItemLongNameLabel = UILabel()
+
+                self.contentView.addSubview(self.unitItemShortNameLabel)
+                self.unitItemShortNameLabel.translatesAutoresizingMaskIntoConstraints = false
+                self.unitItemShortNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 2).isActive = true
+                self.unitItemShortNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 2).isActive = true
+                self.unitItemShortNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -2).isActive = true
+                self.unitItemShortNameLabel.heightAnchor.constraint(equalTo: self.contentView.heightAnchor, multiplier: 0.55).isActive = true
+                self.unitItemShortNameLabel.textAlignment = .center
+                self.unitItemShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 14)
+                self.unitItemShortNameLabel.backgroundColor = .clear
+
+                self.contentView.addSubview(self.unitItemLongNameLabel)
+                self.unitItemLongNameLabel.translatesAutoresizingMaskIntoConstraints = false
+                self.unitItemLongNameLabel.topAnchor.constraint(equalTo: self.unitItemShortNameLabel.bottomAnchor, constant: 3).isActive = true
+                self.unitItemLongNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -2).isActive = true
+                self.unitItemLongNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 0).isActive = true
+                self.unitItemLongNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
+                self.unitItemLongNameLabel.textAlignment = .center
+                self.unitItemLongNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 10)
+                self.unitItemLongNameLabel.textColor = .lightGray
+            }
+
+            self.unitItemShortNameLabel.text = UnitConversionHelper.getUnitItemShortName(item.unitItem)
+            self.unitItemLongNameLabel.text = UnitConversionHelper.getUnitItemDisplayName(item.unitItem)
+
+            if item.selected {
+                self.contentView.backgroundColor = .yellow
+            } else {
+                self.contentView.backgroundColor = .white
+            }
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -86,48 +135,66 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
 
         // initialize the (hidden) dismiss button.
         let dismissButton = UIButton()
-        self.view.addSubview(dismissButton)
+        self.rootView.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
-        dismissButton.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        dismissButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        dismissButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
-        dismissButton.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 1.0 - SideMenuHelper.menuWidthPercent).isActive = true
+        dismissButton.topAnchor.constraint(equalTo: self.rootView.topAnchor).isActive = true
+        dismissButton.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor).isActive = true
+        dismissButton.rightAnchor.constraint(equalTo: self.rootView.rightAnchor).isActive = true
+        dismissButton.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: 1.0 - SideMenuHelper.menuWidthPercent).isActive = true
         dismissButton.addTarget(self, action: #selector(self.dismissToMain), for: .touchUpInside)
 
         // initialize all the 3 tables
-        let cellHeight: CGFloat = 40
-        let unitTypeWidthPercent: CGFloat = 0.33
+        let cellHeight: CGFloat = 45
+        let unitTypeWidthPercent: CGFloat = 0.30
 
-        let unitTypeSelectionView = AmCardView()
-        self.view.addSubview(unitTypeSelectionView)
+        let unitTypeSelectionView = UIView()
+        self.rootView.addSubview(unitTypeSelectionView)
         unitTypeSelectionView.translatesAutoresizingMaskIntoConstraints = false
-        unitTypeSelectionView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 50).isActive = true
-        unitTypeSelectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 2).isActive = true
-        unitTypeSelectionView.heightAnchor.constraint(equalToConstant: cellHeight * CGFloat(self.selectionSource.count)).isActive = true
-        unitTypeSelectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: unitTypeWidthPercent * SideMenuHelper.menuWidthPercent, constant: -2).isActive = true
+        unitTypeSelectionView.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.leftAnchor.constraint(equalTo: self.rootView.leftAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor, constant: 0).isActive = true
+        unitTypeSelectionView.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: unitTypeWidthPercent * SideMenuHelper.menuWidthPercent, constant: -2).isActive = true
 
-        let realUnitTypeView = unitTypeSelectionView.getSubview(6)
-        unitTypeSelectionView.layer.shadowRadius = 0.8
-        unitTypeSelectionView.layer.shadowOpacity = 0.5
+        unitTypeSelectionView.backgroundColor = .lightGray
+
+        // unitTypeSelectionView.layer.shadowRadius = 0.8
+        // unitTypeSelectionView.layer.shadowOpacity = 0.5
         self.unitTypeSelectionTable = UITableView()
+        self.unitTypeSelectionTable.tag = UnitSelectionViewController.SubTableTags.unitTypeTableTag
         self.unitTypeSelectionTable.register(UnitTypeSelectionCell.self, forCellReuseIdentifier: UnitSelectionViewController.tableViewCellId)
-        realUnitTypeView.addSubview(self.unitTypeSelectionTable)
+        unitTypeSelectionView.addSubview(self.unitTypeSelectionTable)
         self.unitTypeSelectionTable.dataSource = self
         self.unitTypeSelectionTable.delegate = self
         self.unitTypeSelectionTable.rowHeight = cellHeight
         self.unitTypeSelectionTable.backgroundView = nil
-        self.unitTypeSelectionTable.backgroundColor = .white
         self.unitTypeSelectionTable.separatorStyle = .none
         self.unitTypeSelectionTable.dragInteractionEnabled = false
         self.unitTypeSelectionTable.translatesAutoresizingMaskIntoConstraints = false
-        self.unitTypeSelectionTable.leftAnchor.constraint(equalTo: realUnitTypeView.leftAnchor).isActive = true
-        self.unitTypeSelectionTable.topAnchor.constraint(equalTo: realUnitTypeView.topAnchor).isActive = true
-        self.unitTypeSelectionTable.bottomAnchor.constraint(equalTo: realUnitTypeView.bottomAnchor).isActive = true
-        self.unitTypeSelectionTable.widthAnchor.constraint(equalTo: realUnitTypeView.widthAnchor).isActive = true
+        self.unitTypeSelectionTable.leftAnchor.constraint(equalTo: unitTypeSelectionView.leftAnchor, constant: 1).isActive = true
+        self.unitTypeSelectionTable.topAnchor.constraint(equalTo: unitTypeSelectionView.topAnchor, constant: 55).isActive = true
+        self.unitTypeSelectionTable.heightAnchor.constraint(equalToConstant: cellHeight * CGFloat(self.selectionSource.count)).isActive = true
+        self.unitTypeSelectionTable.widthAnchor.constraint(equalTo: unitTypeSelectionView.widthAnchor).isActive = true
+        self.unitTypeSelectionTable.bounces = false
+        self.unitTypeSelectionTable.alwaysBounceVertical = false
+        self.unitTypeSelectionTable.bouncesZoom = false
         self.unitTypeSelectionTable.backgroundColor = .blue
 
         self.unitItemFromSelectionTable = UITableView()
+        self.unitItemFromSelectionTable.tag = UnitSelectionViewController.SubTableTags.unitItemFromTableTag
+        self.rootView.addSubview(self.unitItemFromSelectionTable)
         self.unitItemFromSelectionTable.register(UnitItemSelectionCell.self, forCellReuseIdentifier: UnitSelectionViewController.tableViewCellId)
+        self.unitItemFromSelectionTable.dataSource = self
+        self.unitItemFromSelectionTable.delegate = self
+        self.unitItemFromSelectionTable.rowHeight = cellHeight
+        self.unitItemFromSelectionTable.backgroundView = nil
+        self.unitItemFromSelectionTable.separatorStyle = .none
+        self.unitItemFromSelectionTable.dragInteractionEnabled = false
+        self.unitItemFromSelectionTable.translatesAutoresizingMaskIntoConstraints = false
+        self.unitItemFromSelectionTable.leftAnchor.constraint(equalTo: unitTypeSelectionView.rightAnchor, constant: 2).isActive = true
+        self.unitItemFromSelectionTable.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 10).isActive = true
+        self.unitItemFromSelectionTable.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor).isActive = true
+        self.unitItemFromSelectionTable.widthAnchor.constraint(equalTo: self.rootView.widthAnchor, multiplier: (1 - unitTypeWidthPercent) / 2 * SideMenuHelper.menuWidthPercent, constant: -2).isActive = true
+        self.unitItemFromSelectionTable.backgroundColor = .clear
     }
 
     func initSourceTable() {
@@ -174,10 +241,11 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         tableView.deselectRow(at: indexPath, animated: true)
         if tableView.tag == UnitSelectionViewController.SubTableTags.unitTypeTableTag {
             var reloading = [IndexPath]()
-            reloading.append(indexPath)
             for (i, s) in self.selectionSource.enumerated() {
                 if i == indexPath.item {
                     s.selected = true
+                    self.currentUnitTypeSourceIndex = i
+                    reloading.append(IndexPath(item: i, section: 0))
                 } else {
                     s.selected = false
                     reloading.append(IndexPath(item: i, section: 0))
@@ -185,7 +253,9 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             }
 
             tableView.reloadRows(at: reloading, with: .none)
+            self.unitItemFromSelectionTable.reloadData()
         } else if tableView.tag == UnitSelectionViewController.SubTableTags.unitItemFromTableTag {
+
         } else { // unitItemToTableTag
         }
     }
@@ -209,7 +279,12 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             cell.load(self.selectionSource[indexPath.item])
             return cell
         } else if tableView.tag == UnitSelectionViewController.SubTableTags.unitItemFromTableTag {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: UnitSelectionViewController.tableViewCellId) as? UnitItemSelectionCell else {
+                return UITableViewCell()
+            }
 
+            cell.load(self.selectionSource[self.currentUnitTypeSourceIndex].unitItemFrom[indexPath.item])
+            return cell
         } else { // unitItemToTableTag
 
         }

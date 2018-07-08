@@ -1,10 +1,5 @@
 import UIKit
 
-class SideMenuInteractor: UIPercentDrivenInteractiveTransition {
-    var hasStarted: Bool = false
-    var shouldFinish: Bool = false
-}
-
 enum SideMenuSlideDirection {
     case Left
     case Right
@@ -99,6 +94,6 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 }
 
 struct SideMenuHelper {
-    static let menuWidthPercent: CGFloat = 0.8
+    static let menuWidthPercent: CGFloat = 0.85
     static let snapshotTagNumber: Int = 10001
 }
