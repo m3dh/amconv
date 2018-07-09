@@ -41,8 +41,8 @@ enum UnitItems: Int, Codable {
     case meter
     case mile
     case foot
-    case inch
     case yard
+    case inch
 
     /* Temperature, Std: celsius */
     case celsius

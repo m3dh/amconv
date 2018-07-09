@@ -188,7 +188,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
             }
         }
         catch {
-            fatalError("Unable to write data from \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
+            print("Unable to write data from \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
         }
     }
 
@@ -230,7 +230,6 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
             self.dataSourceCollection.insert(logItem, at: 0)
             self.collectionView.insertItems(at: [indexPath])
             self.collectionView.scrollToItem(at: indexPath, at: .left, animated: true)
-
             if self.dataSourceCollection.count > QueryLogViewDataSource.collectionCellLRUKeptNumber {
                 let removeIndex = self.dataSourceCollection.count - 1
                 self.dataSourceCollection.remove(at: removeIndex)
@@ -241,8 +240,16 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         self._save()
     }
 
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.dataSourceCollection.count
+        if section == 0 {
+            return self.dataSourceCollection.count
+        } else {
+            return 0
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

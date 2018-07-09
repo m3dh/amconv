@@ -8,7 +8,12 @@ import UIKit
 //      - iPhone 6S [-]
 //      - iPhone SE [ ]
 //      - iPhone 6P [ ]
-//      - iPhone X  [ ]
+//      - iPhone  X [ ]
+
+// ENHANCEMENTS (P2):
+//   More units:
+//     pixel -> pt -> em.
+//     hp -> kw -> bhp
 
 // UITextFieldDelegate for input output view text fields.
 class ConverterMainViewController: UIViewController, UITextFieldDelegate {
@@ -86,17 +91,17 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.fromUnit), .upper)
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.toUnit), .lower)
             self.applyInputNum(Decimal(string: lastCalc.from)!, .upper)
-            self.getCalcResult(.upper, true)
         } else {
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(UnitItems.fahrenheit), .upper)
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(UnitItems.celsius), .lower)
             self.applyInputNum(Decimal(0), .upper)
-            self.getCalcResult(.upper, false)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.nextInputClean = true
+        self.getCalcResult(.upper, false)
         self.setInputMode(self.previousInputMode)
     }
 
