@@ -1,11 +1,14 @@
 import UIKit
 
 // TODO:
-//   1.
-//   2. force touch shortcuts.
-//   3. localization.
-//   -
-//   4. button icons implementation. (enhancements)
+//   1. load log items from device storage [√]
+//   2. force touch shortcuts. [ ]
+//   3. localization. [ ]
+//   4. devices:
+//      - iPhone 6S [-]
+//      - iPhone SE [ ]
+//      - iPhone 6P [ ]
+//      - iPhone X  [ ]
 
 // UITextFieldDelegate for input output view text fields.
 class ConverterMainViewController: UIViewController, UITextFieldDelegate {
@@ -17,8 +20,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     static let rootSubViewDistance: CGFloat = 5
 
     static let keptDigitNumbers = 8
-    static let fontName: String = "ArialMT" // "KohinoorDevanagari-Light"
-    static let wideFontName: String = ""
+    static let fontName: String = "Avenir-Roman"
+    static let wideFontName: String = "Avenir-Medium"
     static let upperLongNameButtonTag: Int = 1001
     static let lowerLongNameButtonTag: Int = 1002
 
@@ -72,21 +75,24 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             self.inputViewFontSize = 28
         }
 
-        UnitConversionHelper.initialize()
-
-        // TODO: this shall be loaded from storage
-        let previousUpperUnit = UnitItems.fahrenheit
-        let previousLowerUnit = UnitItems.celsius
-        let previousUpperValue = Decimal(0)
-
+        // initialize view
         self.rootView.backgroundColor = UIColor.gray
         self.createMainViewSections(self.rootView, UIScreen.main.bounds.height - UIApplication.shared.statusBarFrame.height)
 
-        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(previousUpperUnit), .upper)
-        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(previousLowerUnit), .lower)
-
-        self.applyInputNum(previousUpperValue, .upper)
-        self.getCalcResult(.upper, true)
+        // initialize data sets
+        UnitConversionHelper.initialize()
+        self.queryLogViewDataSource.initialize()
+        if let lastCalc = self.queryLogViewDataSource.dataSourceCollection.first {
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.fromUnit), .upper)
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.toUnit), .lower)
+            self.applyInputNum(Decimal(string: lastCalc.from)!, .upper)
+            self.getCalcResult(.upper, true)
+        } else {
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(UnitItems.fahrenheit), .upper)
+            self.applyConverter(UnitConversionHelper.getUnitConverterByItem(UnitItems.celsius), .lower)
+            self.applyInputNum(Decimal(0), .upper)
+            self.getCalcResult(.upper, false)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -112,7 +118,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     func applyInputNum(_ num: Decimal, _ inMode: InputMode) {
         var realNum = num
         if num.isNormal {
-            print("calc result : \(num.description)")
             realNum = ConverterMainViewController.getRoundedNumber(num, ConverterMainViewController.keptDigitNumbers)
         }
 
@@ -373,7 +378,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         let xBarTitle = UILabel()
         xBarView.addSubview(xBarTitle)
         xBarTitle.translatesAutoresizingMaskIntoConstraints = false
-        xBarTitle.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
+        xBarTitle.font = UIFont(name: ConverterMainViewController.wideFontName, size: 18)
         xBarTitle.textAlignment = .center
         xBarTitle.text = "Unit Converter"
         xBarTitle.textColor = .white
@@ -462,7 +467,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         let equalSignView = UILabel()
         equalSignView.textAlignment = .center
         equalSignView.text = "="
-        equalSignView.font = UIFont(name: ConverterMainViewController.fontName, size: 28)
+        equalSignView.font = UIFont(name: ConverterMainViewController.wideFontName, size: 28)
 
         let leftColorView = UIView()
         inputOutputView.addSubview(leftColorView)
@@ -548,7 +553,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         let longNameButton = longNameButton.getRealButton(1)
         longNameButton.setTitle("", for: .normal)
         longNameButton.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
-        longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 16)
+        longNameButton.titleLabel!.font = UIFont(name: ConverterMainViewController.wideFontName, size: 16)
         longNameButton.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
 
         containerView.addSubview(longNameButton)
@@ -567,7 +572,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         shortNameLabel.translatesAutoresizingMaskIntoConstraints = false
         shortNameLabel.text = ""
         shortNameLabel.textAlignment = .right
-        shortNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 13)
+        shortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 13)
         shortNameLabel.textColor = ConverterMainViewController.shortNameFontColor
         shortNameLabel.backgroundColor = ConverterMainViewController.basicBackgroundColor
         shortNameLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -5).isActive = true
@@ -575,7 +580,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
         inputTextField.text = ""
         inputTextField.textAlignment = .right
-        inputTextField.font = UIFont(name: ConverterMainViewController.fontName, size: CGFloat(self.inputViewFontSize))
+        inputTextField.font = UIFont(name: ConverterMainViewController.wideFontName, size: CGFloat(self.inputViewFontSize))
         inputTextField.adjustsFontSizeToFitWidth = true
         inputTextField.minimumFontSize = 24
         inputTextField.backgroundColor = ConverterMainViewController.basicBackgroundColor
@@ -637,7 +642,9 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         numDotButton.tag = 11
 
         let backspaceButton = AmButton()
-        backspaceButton.setTitle("⌫", for: .normal)
+        // backspaceButton.setTitle("⌫", for: .normal)
+        let deleteImage = UIImage(named: "DeleteIcon")
+        backspaceButton.setImage(deleteImage, for: UIControlState.normal)
         backspaceButton.tag = 12
 
         let clearButton = AmButton()
@@ -645,11 +652,15 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         clearButton.tag = 13
 
         let copyButton = AmButton()
-        copyButton.setTitle("✄", for: .normal)
+        // copyButton.setTitle("✄", for: .normal)
+        let copyImage = UIImage(named: "CopyIcon")
+        copyButton.setImage(copyImage, for: UIControlState.normal)
         copyButton.tag = 14
 
         let enterButton = AmButton()
-        enterButton.setTitle("⇋", for: .normal)
+        // enterButton.setTitle("⇋", for: .normal)
+        let convertIcon = UIImage(named: "ConvertIcon")
+        enterButton.setImage(convertIcon, for: UIControlState.normal)
         enterButton.setBackgroundColor(color: ConverterMainViewController.inputFieldActivateFontColor, forState: .normal)
         enterButton.tag = 15
 
@@ -676,7 +687,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         ]
 
         for button in ret {
-            button.titleLabel!.font = UIFont(name: ConverterMainViewController.fontName, size: 24)
+            button.titleLabel!.font = UIFont(name: "Avenir-Medium", size: 24)
             button.addTarget(self, action: #selector(numpadButtonTouchUpInside), for: UIControlEvents.touchUpInside)
         }
 
@@ -719,7 +730,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
                     button.setBackgroundColor(color: ConverterMainViewController.keyboardOnTouchColor, forState: .selected)
                     button.setBackgroundColor(color: ConverterMainViewController.keyboardOnTouchColor, forState: .highlighted)
-                    button.setTitleColor(ConverterMainViewController.mainStreamFontColor, for: .normal)
+                    button.setTitleColor(.black, for: .normal)
                     columnView.addArrangedSubview(button)
                 }
             }
@@ -769,6 +780,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         self.applyInputNum(Decimal(string: logItem.from)!, .upper)
         self.applyInputNum(Decimal(string: logItem.to)!, .lower)
         self.setInputMode(.upper)
+        self.nextInputClean = true
     }
 
     func loadNewUnitPair(_ from: UnitItems, _ to: UnitItems) {
@@ -776,6 +788,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(from), .upper)
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(to), .lower)
             self.getCalcResult(self.previousInputMode, true)
+            self.nextInputClean = true
         }
     }
 

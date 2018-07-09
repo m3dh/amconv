@@ -1,6 +1,6 @@
 import UIKit
 
-class QueryLogItem {
+class QueryLogItem: Codable {
     var from: String
     var to: String
     var fromUnit: UnitItems
@@ -125,14 +125,14 @@ class QueryLogViewCell : UICollectionViewCell {
         lowerShortNameLabel.font = UIFont(name: QueryLogViewCell.unitFontName, size: 10)
 
         self.upperDigitLabel = UILabel()
-        upperDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
+        upperDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 17)
         upperDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         upperDigitLabel.textAlignment = .center
         upperDigitLabel.adjustsFontSizeToFitWidth = true
         upperDigitLabel.minimumScaleFactor = 8.0 / 16.0;
         upperContainer.addSubview(upperDigitLabel)
         upperDigitLabel.translatesAutoresizingMaskIntoConstraints = false
-        upperDigitLabel.topAnchor.constraint(equalTo: upperContainer.topAnchor, constant: 13).isActive = true
+        upperDigitLabel.topAnchor.constraint(equalTo: upperContainer.topAnchor, constant: 10).isActive = true
         upperDigitLabel.leftAnchor.constraint(equalTo: upperContainer.leftAnchor, constant: 0).isActive = true
         upperDigitLabel.rightAnchor.constraint(equalTo: upperContainer.rightAnchor, constant: 0).isActive = true
         upperDigitLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
@@ -141,18 +141,18 @@ class QueryLogViewCell : UICollectionViewCell {
         upperShortNameLabel.translatesAutoresizingMaskIntoConstraints = false
         upperShortNameLabel.leftAnchor.constraint(equalTo: upperContainer.leftAnchor, constant: 25).isActive = true
         upperShortNameLabel.rightAnchor.constraint(equalTo: upperContainer.rightAnchor, constant: -25).isActive = true
-        upperShortNameLabel.topAnchor.constraint(equalTo: upperDigitLabel.bottomAnchor, constant: 2).isActive = true
+        upperShortNameLabel.topAnchor.constraint(equalTo: upperDigitLabel.bottomAnchor, constant: 4).isActive = true
         upperShortNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
 
         self.lowerDigitLabel = UILabel()
-        lowerDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 18)
+        lowerDigitLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 17)
         lowerDigitLabel.textColor = QueryLogViewDataSource.queryDigitColor
         lowerDigitLabel.textAlignment = .center
         lowerDigitLabel.adjustsFontSizeToFitWidth = true
         lowerDigitLabel.minimumScaleFactor = 8.0 / 16.0;
         lowerContainer.addSubview(lowerDigitLabel)
         lowerDigitLabel.translatesAutoresizingMaskIntoConstraints = false
-        lowerDigitLabel.topAnchor.constraint(equalTo: lowerContainer.topAnchor, constant: 12).isActive = true
+        lowerDigitLabel.topAnchor.constraint(equalTo: lowerContainer.topAnchor, constant: 10).isActive = true
         lowerDigitLabel.leftAnchor.constraint(equalTo: lowerContainer.leftAnchor, constant: 0).isActive = true
         lowerDigitLabel.rightAnchor.constraint(equalTo: lowerContainer.rightAnchor, constant: 0).isActive = true
         lowerDigitLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
@@ -161,12 +161,15 @@ class QueryLogViewCell : UICollectionViewCell {
         lowerShortNameLabel.translatesAutoresizingMaskIntoConstraints = false
         lowerShortNameLabel.leftAnchor.constraint(equalTo: lowerContainer.leftAnchor, constant: 25).isActive = true
         lowerShortNameLabel.rightAnchor.constraint(equalTo: lowerContainer.rightAnchor, constant: -25).isActive = true
-        lowerShortNameLabel.topAnchor.constraint(equalTo: lowerDigitLabel.bottomAnchor, constant: 2).isActive = true
+        lowerShortNameLabel.topAnchor.constraint(equalTo: lowerDigitLabel.bottomAnchor, constant: 4).isActive = true
         lowerShortNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
     }
 }
 
 class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    static let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let logItemArchiveUrl = documentsDirectory.appendingPathComponent("amconv_logs")
+
     static let collectionCellLRUKeptNumber = 10
     static let collectionCellId = "queryLogViewDataCellId"
     static let cellWidthRatio = CGFloat(1.0 / 3.75)
@@ -175,6 +178,31 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
     var collectionView: UICollectionView!
     var converterController: ConverterMainViewController!
     var dataSourceCollection: [QueryLogItem] = []
+
+    func initialize() {
+        do {
+            let data = try Data(contentsOf: QueryLogViewDataSource.logItemArchiveUrl, options: .mappedIfSafe)
+            let decoder = JSONDecoder()
+            if let loaded = try? decoder.decode([QueryLogItem].self, from: data) as [QueryLogItem] {
+                self.dataSourceCollection.append(contentsOf: loaded)
+            }
+        }
+        catch {
+            fatalError("Unable to write data from \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
+        }
+    }
+
+    func _save() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(self.dataSourceCollection) {
+            do {
+                try encoded.write(to: QueryLogViewDataSource.logItemArchiveUrl, options: .atomic)
+            }
+            catch {
+                fatalError("Unable to write data into \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
+            }
+        }
+    }
 
     func appendLogItem(_ logItem: QueryLogItem) {
         var foundItem: QueryLogItem? = nil
@@ -209,6 +237,8 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
                 self.collectionView.deleteItems(at: [IndexPath(item: removeIndex, section: 0)])
             }
         }
+
+        self._save()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

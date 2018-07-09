@@ -10,7 +10,7 @@ enum UnitTypes {
     case mass
 }
 
-enum UnitItems {
+enum UnitItems: Int, Codable {
     /* Mass, Std: kilogram */
     case gram
     case tonne

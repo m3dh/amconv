@@ -178,7 +178,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         allSelectorContainer.layer.shadowOpacity = 0.8
 
         // initialize all the 3 tables
-        let cellHeight: CGFloat = 50
+        let cellHeight: CGFloat = 45
         let unitTypeWidthPercent: CGFloat = 0.30
 
         let unitTypeSelectionView = UIView()
