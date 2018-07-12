@@ -53,5 +53,8 @@ class AmConverterTests: XCTestCase {
 
         let decimal15 = Decimal(string: "80.000000000000001806026851818516978195")!
         XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal15, 8).description, "80")
+
+        let decimal16 = Decimal(string: "99.999999999999")!
+        XCTAssertEqual(ConverterMainViewController.getRoundedNumber(decimal16, 8).description, "100")
     }
 }

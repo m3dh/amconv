@@ -2,7 +2,7 @@ import UIKit
 
 // TODO:
 //   1. load log items from device storage [√]
-//   2. force touch shortcuts. [ ]
+//   2. force touch shortcuts. [√]
 //   3. localization. [ ]
 //   4. devices:
 //      - iPhone 6S [-]
@@ -48,6 +48,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     static let secondaryButtonColor = UIColor(red: 219.0 / 255, green: 154.0 / 255, blue: 147.0 / 255, alpha: 1)
 
+    static let queryLogViewDataSource = QueryLogViewDataSource()
+
     @IBOutlet weak var rootView: UIView!
 
     var upperInputTextField: UITextField!
@@ -67,7 +69,6 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     var inputViewFontSize = 34
     var longNameButtonHeight = 31
 
-    var queryLogViewDataSource = QueryLogViewDataSource()
     var sideAnimationDelegate: SideAnimationDelegate? = nil
 
     var previousInputMode: InputMode = .upper
@@ -86,8 +87,11 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
         // initialize data sets
         UnitConversionHelper.initialize()
-        self.queryLogViewDataSource.initialize()
-        if let lastCalc = self.queryLogViewDataSource.dataSourceCollection.first {
+        ConverterMainViewController.queryLogViewDataSource.initialize()
+        if let shortcutPair = ShortcutsHelper.getHandledShortcutItem() {
+            let (from, to) = shortcutPair
+            self.applyFromShortcut(from, to)
+        } else if let lastCalc = ConverterMainViewController.queryLogViewDataSource.dataSourceCollection.first {
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.fromUnit), .upper)
             self.applyConverter(UnitConversionHelper.getUnitConverterByItem(lastCalc.toUnit), .lower)
             self.applyInputNum(Decimal(string: lastCalc.from)!, .upper)
@@ -100,8 +104,20 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if let shortcutPair = ShortcutsHelper.getHandledShortcutItem() {
+            let (from, to) = shortcutPair
+            self.applyFromShortcut(from, to)
+        }
+
+        if self.lowerInputTempString == nil || self.lowerInputTempString!.isEmpty || self.upperInputTempString == nil || self.upperInputTempString!.isEmpty {
+            if ConverterMainViewController.queryLogViewDataSource.dataSourceCollection.count == 0 {
+                self.getCalcResult(.upper, false)
+            } else {
+                self.getCalcResult(.upper, true)
+            }
+        }
+
         self.nextInputClean = true
-        self.getCalcResult(.upper, false)
         self.setInputMode(self.previousInputMode)
     }
 
@@ -109,6 +125,19 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         get {
             return UIStatusBarStyle.lightContent
         }
+    }
+
+    func applyFromShortcut(_ from: UnitItems, _ to: UnitItems) {
+        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(from), .upper)
+        self.applyConverter(UnitConversionHelper.getUnitConverterByItem(to), .lower)
+
+        if let str = UIPasteboard.general.string, let input = Decimal(string: str) {
+            self.applyInputNum(input, .upper)
+        } else {
+            self.applyInputNum(0, .upper)
+        }
+
+        self.getCalcResult(.upper, false)
     }
 
     func setInputMode(_ mode: InputMode) {
@@ -291,6 +320,10 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
                         for ch in kept.reversed() {
                             result.append(ch)
                         }
+                    } else {
+                        if upRound {
+                            return Decimal(string: result)! + 1
+                        }
                     }
 
                     break
@@ -348,7 +381,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             let lowerDecimal = self.lowerUnitBiConverter.fromStdValue(stdVal)
             self.applyInputNum(lowerDecimal, .lower)
             if !ignoreHistory {
-                self.queryLogViewDataSource.appendLogItem(QueryLogItem(upperStr, self.lowerInputTempString!, self.upperUnitBiConverter.unitItem, self.lowerUnitBiConverter.unitItem))
+                ConverterMainViewController.queryLogViewDataSource.appendLogItem(QueryLogItem(upperStr, self.lowerInputTempString!, self.upperUnitBiConverter.unitItem, self.lowerUnitBiConverter.unitItem))
             }
         } else {
             var lowerStr = self.lowerInputTempString!
@@ -360,7 +393,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
             let upperDecimal = self.upperUnitBiConverter.fromStdValue(self.lowerUnitBiConverter.toStdValue(lowerDecimal))
             self.applyInputNum(upperDecimal, .upper)
             if !ignoreHistory {
-                self.queryLogViewDataSource.appendLogItem(QueryLogItem(lowerStr, self.upperInputTempString!, self.lowerUnitBiConverter.unitItem, self.upperUnitBiConverter.unitItem))
+                ConverterMainViewController.queryLogViewDataSource.appendLogItem(QueryLogItem(lowerStr, self.upperInputTempString!, self.lowerUnitBiConverter.unitItem, self.upperUnitBiConverter.unitItem))
             }
         }
     }
@@ -414,10 +447,10 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         queryLogView.rightAnchor.constraint(equalTo: rootView.rightAnchor).isActive = true
         queryLogView.heightAnchor.constraint(equalTo: rootView.heightAnchor, multiplier: logViewHeight).isActive = true
         queryLogView.register(QueryLogViewCell.self, forCellWithReuseIdentifier: QueryLogViewDataSource.collectionCellId)
-        queryLogView.dataSource = self.queryLogViewDataSource
-        queryLogView.delegate = self.queryLogViewDataSource
-        queryLogViewDataSource.converterController = self
-        self.queryLogViewDataSource.collectionView = queryLogView
+        queryLogView.dataSource = ConverterMainViewController.queryLogViewDataSource
+        queryLogView.delegate = ConverterMainViewController.queryLogViewDataSource
+        ConverterMainViewController.queryLogViewDataSource.converterController = self
+        ConverterMainViewController.queryLogViewDataSource.collectionView = queryLogView
 
         let inputOutputView = AmCardView()
         inputOutputView.getSubview(5).backgroundColor = ConverterMainViewController.basicBackgroundColor

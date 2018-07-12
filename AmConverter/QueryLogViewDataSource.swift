@@ -170,11 +170,12 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
     static let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let logItemArchiveUrl = documentsDirectory.appendingPathComponent("amconv_logs")
 
-    static let collectionCellLRUKeptNumber = 10
+    static let collectionCellLRUKeptNumber = 5
     static let collectionCellId = "queryLogViewDataCellId"
     static let cellWidthRatio = CGFloat(1.0 / 3.75)
     static let queryDigitColor = UIColor(red: 123.0 / 255, green: 124.0 / 255, blue: 124.0 / 255, alpha: 1)
 
+    var hasChanged = false
     var collectionView: UICollectionView!
     var converterController: ConverterMainViewController!
     var dataSourceCollection: [QueryLogItem] = []
@@ -185,22 +186,29 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
             let decoder = JSONDecoder()
             if let loaded = try? decoder.decode([QueryLogItem].self, from: data) as [QueryLogItem] {
                 self.dataSourceCollection.append(contentsOf: loaded)
+                for item in self.dataSourceCollection {
+                    ShortcutsHelper.appendShortcutItem(nil, item.fromUnit, item.toUnit)
+                }
             }
         }
         catch {
-            print("Unable to write data from \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
+            NSLog("Unable to load data from %s : %s", QueryLogViewDataSource.logItemArchiveUrl.path, error.localizedDescription)
         }
     }
 
-    func _save() {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(self.dataSourceCollection) {
-            do {
-                try encoded.write(to: QueryLogViewDataSource.logItemArchiveUrl, options: .atomic)
+    func saveData() {
+        if self.hasChanged {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(self.dataSourceCollection) {
+                do {
+                    try encoded.write(to: QueryLogViewDataSource.logItemArchiveUrl, options: .atomic)
+                }
+                catch {
+                    fatalError("Unable to write data into \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
+                }
             }
-            catch {
-                fatalError("Unable to write data into \(QueryLogViewDataSource.logItemArchiveUrl.path) : \(error.localizedDescription)")
-            }
+
+            self.hasChanged = false
         }
     }
 
@@ -218,6 +226,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
         }
 
         if let uFoundItem = foundItem {
+            // inplace reloading
             uFoundItem.fromUnit = logItem.fromUnit
             uFoundItem.toUnit = logItem.toUnit
             uFoundItem.from = logItem.from
@@ -225,6 +234,11 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
 
             let indexPath = IndexPath(item: foundIndex, section: 0)
             self.collectionView.reloadItems(at: [indexPath])
+
+            // move forward
+            self.dataSourceCollection.remove(at: foundIndex)
+            self.dataSourceCollection.insert(uFoundItem, at: 0)
+            self.collectionView.moveItem(at: indexPath, to: IndexPath(item: 0, section: 0))
         } else {
             let indexPath = IndexPath(item: 0, section: 0)
             self.dataSourceCollection.insert(logItem, at: 0)
@@ -237,7 +251,8 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
             }
         }
 
-        self._save()
+        ShortcutsHelper.appendShortcutItem(nil, logItem.fromUnit, logItem.toUnit)
+        self.hasChanged = true
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
