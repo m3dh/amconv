@@ -1,0 +1,61 @@
+// UI strings
+MainViewTitle="Unit Converter";
+
+// Unit types
+UnitTypeNameArea="area";
+UnitTypeNameFuelConsumption="gas mileage";
+UnitTypeNameLength="length";
+UnitTypeNameTemperature="temperature";
+UnitTypeNameVelocity="velocity";
+UnitTypeNameVolume="volume";
+UnitTypeNameMass="mass";
+
+// Unit items
+UnitItemsNameGram="gram";
+UnitItemsNameTonne="tonne";
+UnitItemsNameUsTon="ton (U.S. ton)";
+UnitItemsNameKilogram="kilogram";
+UnitItemsNamePound="pound";
+UnitItemsNameOunceMass="ounce";
+
+UnitItemsNameSquareMeter="square meter";
+UnitItemsNameSquareCentimeter="square centimeter";
+UnitItemsNameSquareFoot="square foot";
+UnitItemsNameSquareYard="square yard";
+UnitItemsNameSquareInch="square inch";
+UnitItemsNameSquareKilometer="square kilometer";
+UnitItemsNameHectare="hectare";
+UnitItemsNameMu="mu (Chinese area unit)";
+UnitItemsNameAcre="acre";
+
+UnitItemsNameUsMilesPerGallon="miles per U.S. gallon";
+UnitItemsNameKilometresPerLiter="kilometres per liter";
+UnitItemsNameLitersPer100Kilometers="liters per 100 kilometers";
+
+UnitItemsNameCentimeter="centimeter";
+UnitItemsNameKilometer="kilometer";
+UnitItemsNameMeter="meter";
+UnitItemsNameMile="mile";
+UnitItemsNameYard="yard";
+UnitItemsNameFoot="foot";
+UnitItemsNameInch="inch";
+
+UnitItemsNameCelsius="degrees celsius";
+UnitItemsNameFahrenheit="degrees fahrenheit";
+UnitItemsNameKelvin="degrees kelvin";
+
+UnitItemsNameMph="miles per hour";
+UnitItemsNameKph="kilometers per hour";
+UnitItemsNameKnot="knot";
+UnitItemsNameMeterPerSecond="meters per second";
+
+UnitItemsNameCubicCentimeter="cubic centimeter (cc)";
+UnitItemsNameCubitFoot="cubic foot";
+UnitItemsNameCubitInch="cubic inch";
+UnitItemsNamePint="pint";
+UnitItemsNameFluidOunce="fluid ounce";
+UnitItemsNameQuart="quart";
+UnitItemsNameGallon="gallon (U.S.)";
+UnitItemsNameImpGallon="imperial gallon";
+UnitItemsNameLiter="liter";
+UnitItemsNameMilliliter="milli-liter";

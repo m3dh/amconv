@@ -81,6 +81,7 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
                 self.unitNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 10).isActive = true
                 self.unitNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
                 self.unitNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
+                self.unitNameLabel.textAlignment = .center
             }
 
             self.unitNameLabel.text = UnitConversionHelper.getUnitTypeDisplayName(type.unitType)

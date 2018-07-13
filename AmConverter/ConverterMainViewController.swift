@@ -9,6 +9,7 @@ import UIKit
 //      - iPhone SE [ ]
 //      - iPhone 6P [ ]
 //      - iPhone  X [ ]
+//   5. feedback button: more units, suggestions.
 
 // ENHANCEMENTS (P2):
 //   More units:
@@ -418,7 +419,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         xBarTitle.translatesAutoresizingMaskIntoConstraints = false
         xBarTitle.font = UIFont(name: ConverterMainViewController.wideFontName, size: 18)
         xBarTitle.textAlignment = .center
-        xBarTitle.text = "Unit Converter"
+        xBarTitle.text = NSLocalizedString("MainViewTitle", comment: "MainViewTitle")
         xBarTitle.textColor = .white
         xBarTitle.topAnchor.constraint(equalTo: xBarView.topAnchor, constant: 8).isActive = true
         xBarTitle.leftAnchor.constraint(equalTo: xBarView.leftAnchor).isActive = true
@@ -725,7 +726,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         ]
 
         for button in ret {
-            button.titleLabel!.font = UIFont(name: "Avenir-Medium", size: 24)
+            button.titleLabel!.font = UIFont(name: ConverterMainViewController.wideFontName, size: 24)
             button.addTarget(self, action: #selector(numpadButtonTouchUpInside), for: UIControlEvents.touchUpInside)
         }
 
