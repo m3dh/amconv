@@ -12,10 +12,10 @@ UnitTypeNameMass="质量";
 
 // Unit items
 UnitItemsNameGram="克";
-UnitItemsNameTonne="顿";
-UnitItemsNameUsTon="美制顿";
+UnitItemsNameTonne="吨";
+UnitItemsNameUsTon="美制吨";
 UnitItemsNameKilogram="千克";
-UnitItemsNamePound="榜";
+UnitItemsNamePound="磅";
 UnitItemsNameOunceMass="盎司";
 
 UnitItemsNameSquareMeter="平方米";
@@ -58,4 +58,4 @@ UnitItemsNameQuart="夸脱";
 UnitItemsNameGallon="美制加仑";
 UnitItemsNameImpGallon="英制加仑";
 UnitItemsNameLiter="升";
-UnitItemsNameMilliliter="豪升";
+UnitItemsNameMilliliter="毫升";

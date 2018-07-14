@@ -3,9 +3,9 @@ import UIKit
 // TODO:
 //   1. load log items from device storage [√]
 //   2. force touch shortcuts. [√]
-//   3. localization. [ ]
+//   3. localization. [√]
 //   4. devices:
-//      - iPhone 6S [-]
+//      - iPhone 6S [√]
 //      - iPhone SE [ ]
 //      - iPhone 6P [ ]
 //      - iPhone  X [ ]
