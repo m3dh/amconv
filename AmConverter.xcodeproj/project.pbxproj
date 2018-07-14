@@ -18,6 +18,7 @@
 		C39FE44C20D285F800071A51 /* QueryLogViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39FE44B20D285F800071A51 /* QueryLogViewDataSource.swift */; };
 		C3AC1F7820F5D5640004FF99 /* ShortcutsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AC1F7720F5D5640004FF99 /* ShortcutsHelper.swift */; };
 		C3AC1F7D20F895930004FF99 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C3AC1F7F20F895930004FF99 /* Localizable.strings */; };
+		C3AC1F8820F9E68D0004FF99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C3AC1F8A20F9E68D0004FF99 /* InfoPlist.strings */; };
 		C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */; };
 		C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289C120B694ED009A58F4 /* Extensions.swift */; };
 /* End PBXBuildFile section */
@@ -41,14 +42,16 @@
 		C37832BA20A40F7C00838105 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C37832BC20A40F7C00838105 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C37832BF20A40F7C00838105 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C37832C120A40F7C00838105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C37832C620A40F7C00838105 /* AmConverterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AmConverterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C37832CA20A40F7C00838105 /* AmConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmConverterTests.swift; sourceTree = "<group>"; };
 		C37832CC20A40F7C00838105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C39FE44B20D285F800071A51 /* QueryLogViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryLogViewDataSource.swift; sourceTree = "<group>"; };
 		C3AC1F7720F5D5640004FF99 /* ShortcutsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsHelper.swift; sourceTree = "<group>"; };
-		C3AC1F7E20F895930004FF99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3AC1F8020F895C90004FF99 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		C3AC1F8420F9E2BA0004FF99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = Base.lproj/Info.plist; sourceTree = "<group>"; };
+		C3AC1F8520F9E2E80004FF99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C3AC1F8920F9E68D0004FF99 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		C3AC1F8B20F9E6980004FF99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversionHelper.swift; sourceTree = "<group>"; };
 		C3B289C120B694ED009A58F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -103,8 +106,9 @@
 				C37832B920A40F7C00838105 /* Main.storyboard */,
 				C37832BE20A40F7C00838105 /* LaunchScreen.storyboard */,
 				C3AC1F7F20F895930004FF99 /* Localizable.strings */,
+				C3AC1F8A20F9E68D0004FF99 /* InfoPlist.strings */,
 				C37832BC20A40F7C00838105 /* Assets.xcassets */,
-				C37832C120A40F7C00838105 /* Info.plist */,
+				C3AC1F8220F9E2050004FF99 /* Info.plist */,
 			);
 			path = AmConverter;
 			sourceTree = "<group>";
@@ -206,6 +210,7 @@
 				C3AC1F7D20F895930004FF99 /* Localizable.strings in Resources */,
 				C37832BD20A40F7C00838105 /* Assets.xcassets in Resources */,
 				C37832BB20A40F7C00838105 /* Main.storyboard in Resources */,
+				C3AC1F8820F9E68D0004FF99 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,10 +277,27 @@
 		C3AC1F7F20F895930004FF99 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C3AC1F7E20F895930004FF99 /* en */,
 				C3AC1F8020F895C90004FF99 /* zh-Hans */,
+				C3AC1F8520F9E2E80004FF99 /* Base */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		C3AC1F8220F9E2050004FF99 /* Info.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3AC1F8420F9E2BA0004FF99 /* Base */,
+			);
+			name = Info.plist;
+			sourceTree = "<group>";
+		};
+		C3AC1F8A20F9E68D0004FF99 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3AC1F8920F9E68D0004FF99 /* zh-Hans */,
+				C3AC1F8B20F9E6980004FF99 /* Base */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
