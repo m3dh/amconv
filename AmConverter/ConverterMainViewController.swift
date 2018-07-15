@@ -4,12 +4,14 @@ import UIKit
 //   1. load log items from device storage [√]
 //   2. force touch shortcuts. [√]
 //   3. localization. [√]
-//   4. devices:
+//   4. devices: [√]
 //      - iPhone 6S [√]
-//      - iPhone SE [ ]
-//      - iPhone 6P [ ]
-//      - iPhone  X [ ]
+//      - iPhone SE [√]
+//          + BUG: Unit selection view too short.
+//      - iPhone 6P [√]
+//      - iPhone  X [√]
 //   5. feedback button: more units, suggestions.
+//   6. helper hover...
 
 // ENHANCEMENTS (P2):
 //   More units:
@@ -67,8 +69,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     var leftColorBarView: UIView!
 
-    var inputViewFontSize = 34
-    var longNameButtonHeight = 31
+    static var inputViewFontSize = 34
+    static var longNameButtonHeight = 31
 
     var sideAnimationDelegate: SideAnimationDelegate? = nil
 
@@ -77,9 +79,11 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if UIScreen.main.bounds.height <= 568 {
+        if CompatibleHelper.checkIfIsPhone5sDimension() {
             // is iPhone SE
-            self.inputViewFontSize = 28
+            ConverterMainViewController.inputViewFontSize = 28
+            SideMenuHelper.menuHeightPercent = 0.6
+            UnitSelectionViewController.UnitTypeSelectionCell.typeFontSize = 14
         }
 
         // initialize view
@@ -598,7 +602,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         containerView.addSubview(longNameButton)
         longNameButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 5).isActive = true
         longNameButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5).isActive = true
-        longNameButton.heightAnchor.constraint(equalToConstant: CGFloat(self.longNameButtonHeight)).isActive = true
+        longNameButton.heightAnchor.constraint(equalToConstant: CGFloat(ConverterMainViewController.longNameButtonHeight)).isActive = true
         longNameButton.layer.cornerRadius = 1
         longNameButton.layer.shadowColor = ConverterMainViewController.longNameButtonFontColor.cgColor
         longNameButton.layer.shadowRadius = 0.7
@@ -619,7 +623,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
         inputTextField.text = ""
         inputTextField.textAlignment = .right
-        inputTextField.font = UIFont(name: ConverterMainViewController.wideFontName, size: CGFloat(self.inputViewFontSize))
+        inputTextField.font = UIFont(name: ConverterMainViewController.wideFontName, size: CGFloat(ConverterMainViewController.inputViewFontSize))
         inputTextField.adjustsFontSizeToFitWidth = true
         inputTextField.minimumFontSize = 24
         inputTextField.backgroundColor = ConverterMainViewController.basicBackgroundColor

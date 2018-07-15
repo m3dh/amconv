@@ -66,6 +66,8 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
         static let lightBlueBackgroundColor = UIColor(red: 234.0 / 255, green: 244.0 / 255, blue: 252.0 / 255, alpha: 1)
         static let unitItemSelectorBackgroundColor = UIColor(red: 225.0 / 255, green: 243.0 / 255, blue: 213.0 / 255, alpha: 1)
 
+        static var typeFontSize: CGFloat = 16
+
         var initialized = false
 
         var unitNameLabel: UILabel!
@@ -74,12 +76,12 @@ class UnitSelectionViewController: UIViewController, UITableViewDataSource, UITa
             if !self.initialized {
                 self.initialized = true
                 self.unitNameLabel = UILabel()
-                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: 16)
+                self.unitNameLabel.font = UIFont(name: ConverterMainViewController.fontName, size: UnitTypeSelectionCell.typeFontSize)
                 self.contentView.addSubview(self.unitNameLabel)
                 self.unitNameLabel.translatesAutoresizingMaskIntoConstraints = false
                 self.unitNameLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
-                self.unitNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 10).isActive = true
-                self.unitNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
+                self.unitNameLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 0).isActive = true
+                self.unitNameLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
                 self.unitNameLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
                 self.unitNameLabel.textAlignment = .center
             }

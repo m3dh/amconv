@@ -92,6 +92,6 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 }
 
 struct SideMenuHelper {
-    static let menuHeightPercent: CGFloat = 0.5
-    static let snapshotTagNumber: Int = 10001
+    static var menuHeightPercent: CGFloat = 0.5
+    static var snapshotTagNumber: Int = 10001
 }
