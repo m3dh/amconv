@@ -35,6 +35,7 @@ class SideDismissMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             withDuration: self.transitionDuration(using: transitionContext),
             animations: {
                 snapshot.alpha = 1
+                SharedUIHelper.getStatusBar().backgroundColor = ConverterMainViewController.xBarBackgroundColor
                 fromController.view.center.y += UIScreen.main.bounds.height * SideMenuHelper.menuHeightPercent
         },
             completion: { _ in
@@ -82,6 +83,7 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             withDuration: self.transitionDuration(using: transitionContext),
             animations: {
                 snapshot.alpha = 0.5
+                SharedUIHelper.getStatusBar().backgroundColor = SideMenuHelper.dimmedStatusBarColor
                 toController.view.center.y = previouCenterY
         },
             completion: { _ in
@@ -94,4 +96,6 @@ class SidePresentMenuAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 struct SideMenuHelper {
     static var menuHeightPercent: CGFloat = 0.5
     static var snapshotTagNumber: Int = 10001
+
+    static let dimmedStatusBarColor: UIColor = UIColor(red: 36.0/255, green: 35.0/255, blue: 42.0/255, alpha: 1)
 }

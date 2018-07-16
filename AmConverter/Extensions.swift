@@ -1,5 +1,18 @@
 import UIKit
 
+class SharedUIHelper {
+    private static var statusBar: UIView?
+
+    static func getStatusBar() -> UIView {
+        if SharedUIHelper.statusBar == nil {
+            guard let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView else { fatalError("Unable to fetch status bar") }
+            SharedUIHelper.statusBar = statusBar
+        }
+
+        return SharedUIHelper.statusBar!
+    }
+}
+
 class AmTextView: UITextView {
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(paste(_:)) {

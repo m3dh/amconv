@@ -22,6 +22,7 @@
 		C3AC1F8D20FADB420004FF99 /* CompatibleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AC1F8C20FADB420004FF99 /* CompatibleHelper.swift */; };
 		C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */; };
 		C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B289C120B694ED009A58F4 /* Extensions.swift */; };
+		C3E9F1E720FC66CF00CE142F /* GuidePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E9F1E620FC66CF00CE142F /* GuidePageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		C3AC1F8C20FADB420004FF99 /* CompatibleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatibleHelper.swift; sourceTree = "<group>"; };
 		C3B289BD20B1B72B009A58F4 /* UnitConversionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversionHelper.swift; sourceTree = "<group>"; };
 		C3B289C120B694ED009A58F4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		C3E9F1E620FC66CF00CE142F /* GuidePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 				C37832B720A40F7C00838105 /* ConverterMainViewController.swift */,
 				C351246620DB4CF900D4BB9A /* UnitSelectionViewController.swift */,
 				C39FE44B20D285F800071A51 /* QueryLogViewDataSource.swift */,
+				C3E9F1E620FC66CF00CE142F /* GuidePageViewController.swift */,
 				C351246820DB65B600D4BB9A /* SideAnimationHelper.swift */,
 				C3AC1F7720F5D5640004FF99 /* ShortcutsHelper.swift */,
 				C3AC1F8C20FADB420004FF99 /* CompatibleHelper.swift */,
@@ -239,6 +242,7 @@
 				C37832B620A40F7C00838105 /* AppDelegate.swift in Sources */,
 				C3B289BE20B1B72B009A58F4 /* UnitConversionHelper.swift in Sources */,
 				C3B289C220B694ED009A58F4 /* Extensions.swift in Sources */,
+				C3E9F1E720FC66CF00CE142F /* GuidePageViewController.swift in Sources */,
 				C3AC1F7820F5D5640004FF99 /* ShortcutsHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

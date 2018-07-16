@@ -87,6 +87,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         }
 
         // initialize view
+        SharedUIHelper.getStatusBar().backgroundColor = ConverterMainViewController.xBarBackgroundColor
         self.rootView.backgroundColor = UIColor.gray
         self.createMainViewSections(self.rootView, UIScreen.main.bounds.height - UIApplication.shared.statusBarFrame.height)
 
@@ -426,8 +427,20 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         xBarTitle.text = NSLocalizedString("MainViewTitle", comment: "MainViewTitle")
         xBarTitle.textColor = .white
         xBarTitle.topAnchor.constraint(equalTo: xBarView.topAnchor, constant: 8).isActive = true
-        xBarTitle.leftAnchor.constraint(equalTo: xBarView.leftAnchor).isActive = true
-        xBarTitle.rightAnchor.constraint(equalTo: xBarView.rightAnchor).isActive = true
+        xBarTitle.leftAnchor.constraint(equalTo: xBarView.leftAnchor, constant: 60).isActive = true
+        xBarTitle.rightAnchor.constraint(equalTo: xBarView.rightAnchor, constant: -60).isActive = true
+
+        let xGuideButton = UIButton()
+        let questionMarkImage = UIImage(named: "QuestionMark")
+        xGuideButton.setImage(questionMarkImage, for: UIControlState.normal)
+        xGuideButton.translatesAutoresizingMaskIntoConstraints = false
+        xBarView.addSubview(xGuideButton)
+        xGuideButton.rightAnchor.constraint(equalTo: xBarView.rightAnchor, constant: -15).isActive = true
+        xGuideButton.widthAnchor.constraint(equalTo: xGuideButton.heightAnchor).isActive = true
+        xGuideButton.topAnchor.constraint(equalTo: xBarView.topAnchor, constant: 8).isActive = true
+        xGuideButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        xGuideButton.backgroundColor = .clear
+        xGuideButton.addTarget(self, action: #selector(guideButtonTouchUpInside), for: .touchUpInside)
 
         // extend xbar to 1/3 behind the input output view
         let xBarExtendView = UIView()
@@ -731,7 +744,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
         for button in ret {
             button.titleLabel!.font = UIFont(name: ConverterMainViewController.wideFontName, size: 24)
-            button.addTarget(self, action: #selector(numpadButtonTouchUpInside), for: UIControlEvents.touchUpInside)
+            button.addTarget(self, action: #selector(numpadButtonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
         }
 
         return ret
@@ -783,6 +796,10 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     @objc func longNameButtonTouchUpInside(_ sender: UIButton) {
         // pass the long name button as sender
         self.performSegue(withIdentifier: "mainToUnitSelection", sender: sender)
+    }
+
+    @objc func guideButtonTouchUpInside(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "mainToGuidePages", sender: sender)
     }
 
     @objc func numpadButtonTouchUpInside(_ sender: UIButton) {
@@ -837,7 +854,8 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let dest = segue.destination as? UnitSelectionViewController else {
-            fatalError("Unexpected destination type")
+            super.prepare(for: segue, sender: sender)
+            return
         }
 
         dest.converterController = self
