@@ -34,7 +34,7 @@
                     <connections>
                         <outlet property="rootView" destination="d7y-Ar-ORP" id="JeN-2j-xIY"/>
                         <segue destination="kSe-P4-2nQ" kind="show" identifier="mainToUnitSelection" id="hP5-xv-hgy"/>
-                        <segue destination="Ixy-JQ-Lmn" kind="presentation" identifier="mainToGuidePages" id="YRa-fB-2iR"/>
+                        <segue destination="yMq-eq-0JP" kind="presentation" identifier="mainToGuideView" id="4pr-fX-5KO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -42,12 +42,34 @@
             <point key="canvasLocation" x="32.799999999999997" y="32.833583208395808"/>
         </scene>
         <!--Guide Page View Controller-->
-        <scene sceneID="dfN-mh-OqK">
+        <scene sceneID="aMK-8T-V91">
             <objects>
-                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="pageCurl" navigationOrientation="horizontal" spineLocation="min" id="Ixy-JQ-Lmn" customClass="GuidePageViewController" customModule="AmConverter" customModuleProvider="target" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1J2-84-pmh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="yMq-eq-0JP" customClass="GuidePageViewController" customModule="AmConverter" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rfS-sm-dVd">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F1B-Dt-POl">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Pl0-CA-h3i" firstAttribute="trailing" secondItem="F1B-Dt-POl" secondAttribute="trailing" id="AHk-Oa-Jyl"/>
+                            <constraint firstItem="Pl0-CA-h3i" firstAttribute="bottom" secondItem="F1B-Dt-POl" secondAttribute="bottom" id="T6c-Fs-qNo"/>
+                            <constraint firstItem="F1B-Dt-POl" firstAttribute="top" secondItem="Pl0-CA-h3i" secondAttribute="top" id="es1-gH-XzA"/>
+                            <constraint firstItem="F1B-Dt-POl" firstAttribute="leading" secondItem="Pl0-CA-h3i" secondAttribute="leading" id="zj9-f9-Mcj"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Pl0-CA-h3i"/>
+                    </view>
+                    <connections>
+                        <outlet property="rootView" destination="F1B-Dt-POl" id="vWZ-fm-8Qu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ybA-eN-dQl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="33" y="777"/>
+            <point key="canvasLocation" x="33" y="780"/>
         </scene>
         <!--Unit Selection View Controller-->
         <scene sceneID="18R-G5-2ug">

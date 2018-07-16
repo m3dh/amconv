@@ -456,6 +456,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout.init()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
         let queryLogView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         queryLogView.backgroundColor = .clear
         rootView.addSubview(queryLogView)
@@ -799,7 +800,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
     }
 
     @objc func guideButtonTouchUpInside(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "mainToGuidePages", sender: sender)
+        self.performSegue(withIdentifier: "mainToGuideView", sender: sender)
     }
 
     @objc func numpadButtonTouchUpInside(_ sender: UIButton) {

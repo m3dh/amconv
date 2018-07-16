@@ -37,7 +37,7 @@ class QueryLogViewCell : UICollectionViewCell {
             logItemView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
             logItemView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -10).isActive = true
             logItemView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 5).isActive = true
-            logItemView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
+            logItemView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -5).isActive = true
 
             let logItemContentView = logItemView.getSubview(5)
             logItemContentView.backgroundColor = ConverterMainViewController.basicBackgroundColor
@@ -172,7 +172,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
 
     static let collectionCellLRUKeptNumber = 5
     static let collectionCellId = "queryLogViewDataCellId"
-    static let cellWidthRatio = CGFloat(1.0 / 3.75)
+    static let cellWidthRatio = CGFloat(1.0 / 3.5)
     static let queryDigitColor = UIColor(red: 123.0 / 255, green: 124.0 / 255, blue: 124.0 / 255, alpha: 1)
 
     var hasChanged = false
@@ -239,6 +239,7 @@ class QueryLogViewDataSource: NSObject, UICollectionViewDataSource, UICollection
             self.dataSourceCollection.remove(at: foundIndex)
             self.dataSourceCollection.insert(uFoundItem, at: 0)
             self.collectionView.moveItem(at: indexPath, to: IndexPath(item: 0, section: 0))
+            self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .left, animated: true)
         } else {
             let indexPath = IndexPath(item: 0, section: 0)
             self.dataSourceCollection.insert(logItem, at: 0)

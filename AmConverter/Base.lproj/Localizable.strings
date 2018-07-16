@@ -1,6 +1,12 @@
 // UI strings
 MainViewTitle="Unit Converter";
 
+// Image strings
+Guide1MainView="Guide_1_MainView_Base";
+Guide2Selection="Guide_2_Selection_Base";
+Guide3Applied="Guide_3_Applied_Base";
+Guide43dTouch="Guide_4_3dTouch_Base";
+
 // Unit types
 UnitTypeNameArea="area";
 UnitTypeNameFuelConsumption="gas mileage";
