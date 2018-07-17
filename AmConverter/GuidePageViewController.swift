@@ -22,16 +22,16 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
     }
 
     static let collectionCellReuseId = "collectionCellReuseId"
+    var pageControl: UIPageControl!
     var collectionView: UICollectionView!
     var collectionSource: [UIImage]!
 
     @IBOutlet weak var rootView: UIView!
 
     /*
-     - full cell movements
-     - dots
-     - title, ok button
-     - iphone wrapper
+     - screenshot frame ratio [ ]
+     - iphone wrapper [ ]
+     - screenshot localization [ ]
     */
 
     override func viewDidLoad() {
@@ -46,7 +46,59 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
             UIImage(named: NSLocalizedString("Guide43dTouch", comment: "Guide43dTouch"))!,
         ]
 
+        let titleLabel = UILabel()
+        self.rootView.addSubview(titleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = NSLocalizedString("GuideViewTitle", comment: "GuideViewTitle")
+        titleLabel.font = UIFont(name: ConverterMainViewController.wideFontName, size: 18)
+        titleLabel.textColor = .black
+        titleLabel.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 7).isActive = true
+        titleLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        titleLabel.leftAnchor.constraint(equalTo: self.rootView.leftAnchor, constant: 0).isActive = true
+        titleLabel.rightAnchor.constraint(equalTo: self.rootView.rightAnchor, constant: 0).isActive = true
+        titleLabel.textAlignment = .center
+
+        let dismissButton = AmShadowButton()
+        let realDismiss = dismissButton.getRealButton(1)
+
+        realDismiss.setTitle(NSLocalizedString("DismissGuideButtonText", comment: "DismissGuideButtonText"), for: .normal)
+        realDismiss.setTitleColor(ConverterMainViewController.longNameButtonFontColor, for: .normal)
+        realDismiss.titleLabel!.font = UIFont(name: ConverterMainViewController.wideFontName, size: 16)
+        realDismiss.setBackgroundColor(color: ConverterMainViewController.longNameButtonBackColor, forState: .normal)
+        self.rootView.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor, constant: -18).isActive = true
+        dismissButton.centerXAnchor.constraint(equalTo: self.rootView.centerXAnchor).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 53).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        dismissButton.button!.addTarget(self, action: #selector(dismissToMain), for: .touchUpInside)
+
+        self.pageControl = UIPageControl()
+        self.rootView.addSubview(self.pageControl)
+        self.pageControl.translatesAutoresizingMaskIntoConstraints = false
+        self.pageControl.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        self.pageControl.heightAnchor.constraint(equalToConstant: 27).isActive = true
+        self.pageControl.bottomAnchor.constraint(equalTo: dismissButton.topAnchor, constant: -5).isActive = true
+        self.pageControl.centerXAnchor.constraint(equalTo: self.rootView.centerXAnchor).isActive = true
+        self.pageControl.backgroundColor = .clear
+        self.pageControl.hidesForSinglePage = true
+        self.pageControl.numberOfPages = self.collectionSource.count
+        self.pageControl.isUserInteractionEnabled = false
+
+        self.pageControl.pageIndicatorTintColor = ConverterMainViewController.inputFieldInactiveFontColor
+        self.pageControl.currentPageIndicatorTintColor = ConverterMainViewController.inputFieldActivateFontColor
+
         // Initialize collection view
+        let guideContainer = AmCardView()
+        let innerContainer = guideContainer.getSubview(5)
+        self.rootView.addSubview(guideContainer)
+        guideContainer.translatesAutoresizingMaskIntoConstraints = false
+        guideContainer.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 50).isActive = true
+        guideContainer.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor, constant: -86).isActive = true
+        guideContainer.centerXAnchor.constraint(equalTo: self.rootView.centerXAnchor).isActive = true
+        guideContainer.widthAnchor.constraint(equalTo: guideContainer.heightAnchor, multiplier: 9.0 / 16.0).isActive = true
+        innerContainer.backgroundColor = .lightGray
+
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout.init()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 0
@@ -55,21 +107,18 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         self.collectionView.register(GuideImageCell.self, forCellWithReuseIdentifier: GuidePageViewController.collectionCellReuseId)
-        self.rootView.addSubview(self.collectionView)
+        innerContainer.addSubview(self.collectionView)
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
-        self.collectionView.topAnchor.constraint(equalTo: self.rootView.topAnchor, constant: 40).isActive = true
-        self.collectionView.leftAnchor.constraint(equalTo: self.rootView.leftAnchor, constant: 40).isActive = true
-        self.collectionView.rightAnchor.constraint(equalTo: self.rootView.rightAnchor, constant: -40).isActive = true
-        self.collectionView.bottomAnchor.constraint(equalTo: self.rootView.bottomAnchor, constant: -100).isActive = true
-        self.collectionView.backgroundColor = .blue
+        self.collectionView.topAnchor.constraint(equalTo: innerContainer.topAnchor).isActive = true
+        self.collectionView.leftAnchor.constraint(equalTo: innerContainer.leftAnchor).isActive = true
+        self.collectionView.rightAnchor.constraint(equalTo: innerContainer.rightAnchor).isActive = true
+        self.collectionView.bottomAnchor.constraint(equalTo: innerContainer.bottomAnchor).isActive = true
         self.collectionView.bounces = false
         self.collectionView.bouncesZoom = false
+        self.collectionView.isPagingEnabled = true
+        self.collectionView.isSpringLoaded = false
         self.collectionView.showsVerticalScrollIndicator = false
         self.collectionView.showsHorizontalScrollIndicator = false
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
-            self.dismissToMain()
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -102,7 +151,12 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        print(">> W\(collectionView.bounds.width), H\(collectionView.bounds.height), I\(indexPath.item) <<")
         return CGSize(width: collectionView.bounds.width, height: collectionView.bounds.height)
+    }
+
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let indexPath = IndexPath(item: Int( (targetContentOffset.pointee.x + self.collectionView.frame.width * 0.5) / self.collectionView.frame.width ), section: 0)
+        self.collectionView.scrollToItem(at: indexPath, at: .left, animated: true)
+        self.pageControl.currentPage = indexPath.item
     }
 }

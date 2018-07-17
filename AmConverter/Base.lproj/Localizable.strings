@@ -1,5 +1,7 @@
 // UI strings
 MainViewTitle="Unit Converter";
+GuideViewTitle="Converter Guide";
+DismissGuideButtonText="Back";
 
 // Image strings
 Guide1MainView="Guide_1_MainView_Base";

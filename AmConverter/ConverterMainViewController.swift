@@ -79,7 +79,7 @@ class ConverterMainViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if CompatibleHelper.checkIfIsPhone5sDimension() {
+        if CompatibleHelper.checkIfIsPhone5Dimension() {
             // is iPhone SE
             ConverterMainViewController.inputViewFontSize = 28
             SideMenuHelper.menuHeightPercent = 0.6
