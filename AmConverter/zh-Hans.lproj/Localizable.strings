@@ -4,10 +4,10 @@ GuideViewTitle="使用说明";
 DismissGuideButtonText="返回";
 
 // Image strings
-Guide1MainView="Guide_1_MainView_Base";
-Guide2Selection="Guide_2_Selection_Base";
-Guide3Applied="Guide_3_Applied_Base";
-Guide43dTouch="Guide_4_3dTouch_Base";
+Guide1MainView="Guide_1_MainView_Chs";
+Guide2Selection="Guide_2_Selection_Chs";
+Guide3Applied="Guide_3_Applied_Chs";
+Guide43dTouch="Guide_4_3dTouch_Chs";
 
 // Unit types
 UnitTypeNameArea="面积";

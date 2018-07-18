@@ -28,12 +28,6 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
 
     @IBOutlet weak var rootView: UIView!
 
-    /*
-     - screenshot frame ratio [ ]
-     - iphone wrapper [ ]
-     - screenshot localization [ ]
-    */
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.rootView.backgroundColor = .white
@@ -72,6 +66,10 @@ class GuidePageViewController: UIViewController, UICollectionViewDataSource, UIC
         dismissButton.widthAnchor.constraint(equalToConstant: 53).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         dismissButton.button!.addTarget(self, action: #selector(dismissToMain), for: .touchUpInside)
+
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(dismissToMain))
+        self.rootView.addGestureRecognizer(swipeDownGesture)
+        swipeDownGesture.direction = .down
 
         self.pageControl = UIPageControl()
         self.rootView.addSubview(self.pageControl)
